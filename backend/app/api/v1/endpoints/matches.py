@@ -50,8 +50,17 @@ async def analyze_pair(
     Evaluate two CPSE materials via the rule-based deterministic matching engine
     and persist the candidate match and approval queue item.
     """
+    if request.material_a_id == request.material_b_id:
+        raise HTTPException(
+            status_code=400,
+            detail="A material cannot be compared with itself. Please select two distinct materials.",
+        )
     service = MatchingService(db)
-    result = await service.analyze_pair(request)
+    try:
+        result = await service.analyze_pair(request)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     if not result:
         raise HTTPException(
             status_code=404,

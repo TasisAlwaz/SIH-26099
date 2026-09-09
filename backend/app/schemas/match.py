@@ -10,6 +10,9 @@ class MatchSignalBreakdown(BaseSchema):
     attribute_similarity: float
     uom_compatibility: float
     manufacturer_match: float
+    family_compatibility: Optional[float] = None
+    size_rating_compatibility: Optional[float] = None
+    material_grade_compatibility: Optional[float] = None
 
 
 class MatchAnalysisRequest(BaseSchema):
@@ -28,7 +31,8 @@ class MaterialMatchResponse(BaseSchema):
     rationale: List[str]
     detected_differences: List[str]
     recommended_nmc: str
-    created_at: str
+    created_at: Optional[str] = None
+    engine: str = "MOCK_HEURISTIC"
     reviewed_by: Optional[str] = None
     reviewed_at: Optional[str] = None
     review_notes: Optional[str] = None

@@ -6,6 +6,7 @@ import {
   CheckSquare,
   CheckCircle2,
   XCircle,
+  Edit3,
   Eye,
   Clock,
   Filter,
@@ -37,16 +38,18 @@ export default function ApprovalQueuePage() {
     load();
   }, []);
 
-  const handleAction = async (id: string, status: ApprovalStatus) => {
-    const reviewer = "S. Sharma (Chief Procurement Officer)";
-    await materialService.updateApprovalStatus(id, status, reviewer);
+  const handleAction = async (id: string, status: ApprovalStatus, notes?: string) => {
+    const reviewer = "P. Verma (Technical Officer)";
+    await materialService.updateApprovalStatus(id, status, reviewer, notes);
     const updated = await materialService.getApprovals();
     setApprovals(updated);
 
     setActionAlert(
       status === "APPROVED"
         ? `Recommendation ${id} approved successfully! Traceable mapping recorded in National Master.`
-        : `Recommendation ${id} rejected.`
+        : status === "REJECTED"
+        ? `Recommendation ${id} rejected.`
+        : `Recommendation ${id} modified / reclassified.`
     );
     setTimeout(() => setActionAlert(null), 3500);
   };
@@ -87,7 +90,7 @@ export default function ApprovalQueuePage() {
         <div className="flex items-center gap-2">
           <span className="text-xs text-slate-500 font-medium">Filter Queue:</span>
           <div className="flex rounded border border-slate-200 overflow-hidden text-xs">
-            {["ALL", "PENDING", "APPROVED", "REJECTED"].map((st) => (
+            {["ALL", "PENDING", "APPROVED", "REJECTED", "MODIFIED"].map((st) => (
               <button
                 key={st}
                 onClick={() => setFilterStatus(st)}
@@ -195,8 +198,16 @@ export default function ApprovalQueuePage() {
                             <XCircle className="w-4 h-4" />
                           </button>
                           <button
+                            onClick={() => handleAction(appr.id, "MODIFIED", "Reclassified following engineering review")}
+                            className="p-1.5 text-slate-700 hover:bg-slate-100 rounded border border-slate-300 transition-colors"
+                            title="Modify / Reclassify"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                          <button
                             onClick={() => handleAction(appr.id, "APPROVED")}
                             className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-xs font-semibold flex items-center gap-1 shadow-sm transition-colors"
+                            title="Approve Match"
                           >
                             <CheckCircle2 className="w-3.5 h-3.5" />
                             <span>Approve</span>

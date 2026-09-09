@@ -131,7 +131,7 @@ def test_bidirectional_material_mapping(db_session):
 
 def test_match_explainability_json(db_session):
     """Verify that Match stores and retrieves structured JSON breakdown and rationale."""
-    match = db_session.scalar(select(Match).where(Match.status == "PENDING").limit(1))
+    match = db_session.scalar(select(Match).limit(1))
     assert match is not None
     assert match.breakdown is not None
     assert "description_similarity" in match.breakdown

@@ -333,3 +333,169 @@ def test_uploads_history_listing(client):
     for u in uploads:
         assert "filename" in u
         assert "status" in u
+
+
+def test_phase6_self_comparison_rejected(client):
+    """Verify that comparing a material with itself returns 400 Bad Request."""
+    res_list = client.get("/api/v1/materials?page=1&page_size=1")
+    mat_id = res_list.json()["items"][0]["id"]
+    res = client.post("/api/v1/matches/analyze", json={"materialAId": mat_id, "materialBId": mat_id})
+    assert res.status_code == 400
+    assert "cannot be compared with itself" in res.json()["detail"].lower()
+
+
+def test_phase6_valid_pair_analysis_and_determinism(client):
+    """Verify that analyzing a valid pair of materials succeeds and is strictly deterministic."""
+    res_list = client.get("/api/v1/materials?page=1&page_size=2")
+    items = res_list.json()["items"]
+    mat_a = items[0]["id"]
+    mat_b = items[1]["id"]
+
+    # Run first time
+    res1 = client.post("/api/v1/matches/analyze", json={"materialAId": mat_a, "materialBId": mat_b})
+    assert res1.status_code == 200
+    data1 = res1.json()
+
+    # Run second time (should return existing match with identical values)
+    res2 = client.post("/api/v1/matches/analyze", json={"materialAId": mat_a, "materialBId": mat_b})
+    assert res2.status_code == 200
+    data2 = res2.json()
+
+    assert data1["id"] == data2["id"]
+    assert data1["confidence"] == data2["confidence"]
+    assert data1["relationship"] == data2["relationship"]
+    assert data1["breakdown"] == data2["breakdown"]
+    assert data1["rationale"] == data2["rationale"]
+    assert data1["detectedDifferences"] == data2["detectedDifferences"]
+    assert data1["engine"] == "MOCK_HEURISTIC"
+
+
+def test_phase6_all_five_relationship_classes():
+    """Unit test the MockMatchingEngine to verify all 5 relationship classes can be produced deterministically."""
+    import asyncio
+    from app.services.matching_engine import MockMatchingEngine
+    from app.schemas.material import MaterialResponse
+    from app.schemas.common import MatchRelationship
+
+    engine = MockMatchingEngine()
+
+    async def run():
+        # 1. IDENTICAL
+        mat_base = MaterialResponse(
+            id="1", cpse="NTPC", legacy_code="NM-01", raw_description="BALL VALVE 2 INCH SS316 150#",
+            category="Valves", family="Ball Valve", uom="NOS", manufacturer="Audco", material_grade="SS316", size_or_rating="2 INCH"
+        )
+        mat_same = MaterialResponse(
+            id="2", cpse="IOCL", legacy_code="IM-01", raw_description="BALL VALVE 2 INCH SS316 150#",
+            category="Valves", family="Ball Valve", uom="NOS", manufacturer="Audco", material_grade="SS316", size_or_rating="2 INCH"
+        )
+        res_ident = await engine.analyze_pair(mat_base, mat_same)
+        assert res_ident.relationship == MatchRelationship.IDENTICAL
+        assert res_ident.confidence >= 88.0
+
+        # 2. DUPLICATE
+        mat_dup = MaterialResponse(
+            id="3", cpse="SAIL", legacy_code="SM-01", raw_description="VALVE BALL 2 IN SS316 #150 FLANGED",
+            category="Valves", family="Ball Valve", uom="NOS", manufacturer="Audco", material_grade="SS316", size_or_rating="2 IN"
+        )
+        res_dup = await engine.analyze_pair(mat_base, mat_dup)
+        assert res_dup.relationship == MatchRelationship.DUPLICATE
+
+        # 3. NEAR_DUPLICATE
+        mat_near = MaterialResponse(
+            id="4", cpse="BHEL", legacy_code="BM-01", raw_description="BALL VALVE 2 INCH SS316 150# INDUSTRIAL",
+            category="Valves", family="Ball Valve", uom="NOS", manufacturer="L&T", material_grade="SS316", size_or_rating="2 INCH"
+        )
+        res_near = await engine.analyze_pair(mat_base, mat_near)
+        assert res_near.relationship == MatchRelationship.NEAR_DUPLICATE
+
+        # 4. FUNCTIONALLY_EQUIVALENT
+        mat_fe = MaterialResponse(
+            id="5", cpse="IOCL", legacy_code="IM-02", raw_description="GATE VALVE 2 INCH CS 150#",
+            category="Valves", family="Gate Valve", uom="NOS", manufacturer="L&T", material_grade="CS A105", size_or_rating="2 INCH"
+        )
+        res_fe = await engine.analyze_pair(mat_base, mat_fe)
+        assert res_fe.relationship == MatchRelationship.FUNCTIONALLY_EQUIVALENT
+
+        # 5. NOT_EQUIVALENT
+        mat_ne = MaterialResponse(
+            id="6", cpse="SAIL", legacy_code="SM-02", raw_description="LUBRICATING GREASE EP-2 180KG DRUM",
+            category="Lubricants", family="Grease", uom="KG", manufacturer="Servo", material_grade=None, size_or_rating=None
+        )
+        res_ne = await engine.analyze_pair(mat_base, mat_ne)
+        assert res_ne.relationship == MatchRelationship.NOT_EQUIVALENT
+
+    asyncio.run(run())
+
+
+def test_phase6_signals_and_explainability(client):
+    """Verify signals breakdown, rationale, differences, and audit log generation for match analysis."""
+    res_list = client.get("/api/v1/materials?page=1&page_size=10")
+    items = res_list.json()["items"]
+    a, b = items[2]["id"], items[3]["id"]
+    res = client.post("/api/v1/matches/analyze", json={"materialAId": a, "materialBId": b})
+    assert res.status_code == 200
+    m = res.json()
+
+    # Signals breakdown
+    bd = m["breakdown"]
+    assert "descriptionSimilarity" in bd
+    assert "specificationSimilarity" in bd
+    assert "attributeSimilarity" in bd
+    assert "uomCompatibility" in bd
+    assert "manufacturerMatch" in bd
+
+    # Explainability
+    assert len(m["rationale"]) > 0
+    assert len(m["detectedDifferences"]) > 0
+    assert any("heuristic" in r.lower() for r in m["rationale"])
+
+    # Engine
+    assert m["engine"] == "MOCK_HEURISTIC"
+
+    # Audit log check: ANALYZE_MATCH recorded
+    audit_res = client.get("/api/v1/audit?query=ANALYZE_MATCH")
+    assert audit_res.status_code == 200
+    assert audit_res.json()["total"] > 0
+    assert any(x["action"] == "ANALYZE_MATCH" for x in audit_res.json()["items"])
+
+
+def test_phase6_legacy_codes_preserved_throughout_matching_and_review(client):
+    """Verify that CPSE legacy codes are strictly immutable and never overwritten by matching or review."""
+    res_list = client.get("/api/v1/materials?page=1&page_size=2")
+    items = res_list.json()["items"]
+    mat_a_id = items[0]["id"]
+    mat_b_id = items[1]["id"]
+    orig_a_code = items[0]["legacyCode"]
+    orig_b_code = items[1]["legacyCode"]
+
+    # 1. Analyze match
+    res_match = client.post("/api/v1/matches/analyze", json={"materialAId": mat_a_id, "materialBId": mat_b_id})
+    assert res_match.status_code == 200
+    match_id = res_match.json()["id"]
+
+    # Check materials after match analysis
+    a_after_match = client.get(f"/api/v1/materials/{mat_a_id}").json()
+    b_after_match = client.get(f"/api/v1/materials/{mat_b_id}").json()
+    assert a_after_match["legacyCode"] == orig_a_code
+    assert b_after_match["legacyCode"] == orig_b_code
+
+    # 2. Perform Review
+    review_res = client.post(
+        f"/api/v1/approvals/{match_id}/action",
+        json={
+            "status": "APPROVED",
+            "reviewer": "Standardization Auditor",
+            "reviewerRole": "Lead Engineer",
+            "reviewNotes": "Audited and verified legacy code retention",
+        },
+    )
+    assert review_res.status_code == 200
+
+    # Check materials after review
+    a_after_review = client.get(f"/api/v1/materials/{mat_a_id}").json()
+    b_after_review = client.get(f"/api/v1/materials/{mat_b_id}").json()
+    assert a_after_review["legacyCode"] == orig_a_code
+    assert b_after_review["legacyCode"] == orig_b_code
+
+

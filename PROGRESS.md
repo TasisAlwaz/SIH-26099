@@ -2,26 +2,50 @@
 
 **Project:** N-MAT — National Material Intelligence Platform (SIH PS 26099)  
 **Workspace:** `/home/blackhelix/Documents/SIH_26099/N-MAT`  
-**Current Phase:** Phase 5.1 — COMPLETE (Hardened & Audited, Awaiting Phase 6 Sign-Off)
+**Current Phase:** Phase 6 — COMPLETE (Mock AI & Matching Experience, Awaiting Phase 7 Sign-Off)
 
 ---
 
 ## Master Phase Status
 
 | Phase | Description | Status | Sign-off Gate |
-| :---: | :--- | :---: | :---: |
+| :---: | :--- | :--- | :---: |
 | **Phase 0** | Project Constitution & Governance Invariants | **COMPLETE** | Approved by Project Owner |
 | **Phase 1** | Environment & Repository Setup | **COMPLETE** | Approved by Project Owner |
 | **Phase 2** | Frontend Shell & Design System | **COMPLETE** | Approved by Project Owner |
 | **Phase 3** | Backend Foundation & FastAPI REST APIs | **COMPLETE** | Approved by Project Owner |
 | **Phase 4** | Database Architecture & Data Management | **COMPLETE** | Approved by Project Owner |
 | **Phase 5** | Functional Material Master Platform | **COMPLETE** | Approved by Project Owner |
-| **Phase 5.1**| Backend Hardening & Correctness Audit | **COMPLETE** | Ready for Owner Sign-off |
-| **Phase 6** | ML Training Preparation & Pipeline | PENDING | Awaiting Phase 5.1 Sign-off |
-| **Phase 7** | ML Model Training (Colab) & Extraction | PENDING | - |
+| **Phase 5.1**| Backend Hardening & Correctness Audit | **COMPLETE** | Approved by Project Owner |
+| **Phase 6** | Mock AI & Matching Experience | **COMPLETE** | Ready for Owner Sign-off |
+| **Phase 7** | ML Model Training (Colab) & Extraction | PENDING | Awaiting Phase 6 Sign-Off |
 | **Phase 8** | ML Integration & Hot-Swap | PENDING | - |
 | **Phase 9** | Analytics & Procurement Intelligence | PENDING | - |
 | **Phase 10**| Testing, Hardening, Containerization & Demo | PENDING | - |
+
+---
+
+## Phase 6 Verification Checklist (Mock AI & Matching Experience)
+
+- [x] Implemented multi-signal deterministic heuristic engine (`MockMatchingEngine`) with 8 weighted signals: description, specs, category/family, UOM, size/rating, material grade, manufacturer, and composite attributes
+- [x] Incorporated metallurgy equivalence mappings (SS304/AISI304, CS/A105, MS/IS2062, etc.) and canonical unit equivalence sets (NOS/EA/PCS, MTR, KG, LTR, SET)
+- [x] Implemented deterministic 5-class relationship categorization (`IDENTICAL`, `DUPLICATE`, `NEAR_DUPLICATE`, `FUNCTIONALLY_EQUIVALENT`, `NOT_EQUIVALENT`)
+- [x] Applied penalty caps for category clash (max 30%), UOM clash (max 45%), and grade clash (max 78%)
+- [x] Generated explainable rationale and structured technical differences from catalog attributes
+- [x] Maintained strict labeling: Engine output labeled as `MOCK HEURISTIC` and confidence labeled as "Demo heuristic confidence"
+- [x] Added self-comparison validation (HTTP 400 when `material_a_id == material_b_id`)
+- [x] Ensured match analysis idempotency: Existing comparisons return persisted records
+- [x] Staged approval queue records and audit trail logs (`action="ANALYZE_MATCH"`, `actor_name="SYSTEM_HEURISTIC_ENGINE"`)
+- [x] Enforced sovereign legacy code immutability: CPSE legacy codes are never overwritten
+- [x] Upgraded `/matches` UI with interactive catalog selection, animated evaluation states, 8-signal breakdown bars, explainability, differences alert, and Human Review modal
+- [x] Upgraded `/approvals` UI with `MODIFIED` state filtering and reviewer sign-off modal
+- [x] Upgraded `/materials/[id]` UI with direct "Analyze against another material" routing and candidate match evaluation table
+- [x] Preserved raw CSV datasets in `data/raw/` untouched (9,601 and 31,401 lines preserved)
+- [x] Maintained zero real ML package dependencies (no torch, transformers, sentence-transformers, faiss, scikit-learn, pandas, numpy)
+- [x] Added automated backend test suite covering all 5 classes, 8 signals, self-comparison rejection, determinism, and legacy code retention (32/32 tests passed in pytest)
+- [x] Verified frontend production build (`npm run build` compiled 14/14 static & dynamic routes cleanly with zero errors)
+- [x] Authored comprehensive technical specification `docs/06_MOCK_AI_ENGINE.md`
+- [x] Enforced absolute phase boundary: Stopped cleanly without starting Phase 7
 
 ---
 

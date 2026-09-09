@@ -22,7 +22,7 @@ import { LoadingState } from "@/components/ui/LoadingState";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { materialService } from "@/services/materialService";
 import { formatCurrency, formatNumber } from "@/lib/utils";
-import { Material, MaterialMapping } from "@/types";
+import { Material, MaterialMapping, MaterialMatch } from "@/types";
 
 export default function MaterialDetailPage() {
   const params = useParams();
@@ -30,12 +30,16 @@ export default function MaterialDetailPage() {
 
   const [material, setMaterial] = useState<Material | null>(null);
   const [mappings, setMappings] = useState<MaterialMapping[]>([]);
+  const [relatedMatches, setRelatedMatches] = useState<MaterialMatch[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const mat = await materialService.getMaterialById(id);
+      const [mat, allMatches] = await Promise.all([
+        materialService.getMaterialById(id),
+        materialService.getMatches(),
+      ]);
       if (mat) {
         setMaterial(mat);
         if (mat.nationalMaterialCode) {
@@ -43,6 +47,9 @@ export default function MaterialDetailPage() {
           setMappings(m);
         }
       }
+      setRelatedMatches(
+        allMatches.filter((m) => m.materialA.id === id || m.materialB.id === id)
+      );
       setLoading(false);
     }
     load();
@@ -83,11 +90,11 @@ export default function MaterialDetailPage() {
         description="Detailed technical parameter specification, enterprise lineage, and national mapping traceability."
       >
         <Link
-          href={`/matches?search=${encodeURIComponent(material.legacyCode)}`}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded bg-blue-700 text-white hover:bg-blue-800 shadow-sm transition-colors"
+          href={`/matches?matA=${encodeURIComponent(material.id)}`}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded bg-blue-700 text-white hover:bg-blue-800 shadow-sm transition-colors"
         >
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Find AI Matches</span>
+          <span>Analyze against another material</span>
         </Link>
       </PageHeader>
 
@@ -270,6 +277,71 @@ export default function MaterialDetailPage() {
                     <td className="py-2.5 px-4 text-slate-500 font-sans">{map.approvedBy}</td>
                   </tr>
                 ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Related Candidate Matches Section */}
+      {relatedMatches.length > 0 && (
+        <div className="bg-white rounded-md border border-slate-200 p-5 shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide">
+                Evaluated Candidate Matches ({relatedMatches.length})
+              </h3>
+              <p className="text-xs text-slate-500">
+                Multi-attribute comparison records evaluated against peer CPSE materials
+              </p>
+            </div>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+              Heuristic Engine
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                <tr>
+                  <th className="py-2.5 px-4">Peer CPSE</th>
+                  <th className="py-2.5 px-4">Peer Legacy Code</th>
+                  <th className="py-2.5 px-4">Relationship</th>
+                  <th className="py-2.5 px-4">Demo Confidence</th>
+                  <th className="py-2.5 px-4">Review Status</th>
+                  <th className="py-2.5 px-4 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {relatedMatches.map((match) => {
+                  const isMatA = match.materialA.id === id;
+                  const peer = isMatA ? match.materialB : match.materialA;
+                  return (
+                    <tr key={match.id} className="hover:bg-slate-50">
+                      <td className="py-2.5 px-4 font-bold text-slate-900">{peer.cpse}</td>
+                      <td className="py-2.5 px-4 font-mono font-semibold text-blue-700">
+                        {peer.legacyCode}
+                      </td>
+                      <td className="py-2.5 px-4">
+                        <StatusBadge status={match.relationship} />
+                      </td>
+                      <td className="py-2.5 px-4">
+                        <ConfidenceBadge score={match.confidence} size="sm" />
+                      </td>
+                      <td className="py-2.5 px-4">
+                        <StatusBadge status={match.status} />
+                      </td>
+                      <td className="py-2.5 px-4 text-right">
+                        <Link
+                          href={`/matches?id=${match.id}`}
+                          className="text-xs font-semibold text-blue-700 hover:text-blue-900 underline"
+                        >
+                          Inspect Match →
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -66,6 +66,9 @@ export interface MatchSignalBreakdown {
   attributeSimilarity: number;
   uomCompatibility: number;
   manufacturerMatch: number;
+  familyCompatibility?: number;
+  sizeRatingCompatibility?: number;
+  materialGradeCompatibility?: number;
 }
 
 export interface MaterialMatch {
@@ -80,6 +83,7 @@ export interface MaterialMatch {
   detectedDifferences: string[];
   recommendedNmc: string;
   createdAt: string;
+  engine?: string;
   reviewedBy?: string;
   reviewedAt?: string;
   reviewNotes?: string;
