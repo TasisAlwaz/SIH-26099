@@ -1,5 +1,7 @@
+from typing import Generic, TypeVar, List
 from enum import Enum
 from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
 
 
 class MatchRelationship(str, Enum):
@@ -25,4 +27,25 @@ class MaterialStatus(str, Enum):
 
 
 class BaseSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
+
+T = TypeVar("T")
+
+
+class PaginatedResponse(BaseModel, Generic[T]):
+    model_config = ConfigDict(
+        from_attributes=True,
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+    items: List[T]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+

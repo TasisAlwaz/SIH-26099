@@ -89,7 +89,7 @@ export default function AnalyticsPage() {
         <MetricCard
           title="Consolidated Spend Evaluated"
           value={formatCurrency(2150000000)} // 215 Crore
-          subtext="Across 8 CPSE item masters"
+          subtext={`Across ${cpses.length || 4} CPSE item masters`}
           icon={BarChart3}
         />
         <MetricCard

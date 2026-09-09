@@ -70,7 +70,7 @@ export default function DashboardPage() {
       <PageHeader
         title="National Material Master Dashboard"
         description="Cross-CPSE material deduplication, sovereign codification, and procurement intelligence overview."
-        badge="Live Telemetry (Mock)"
+        badge="PostgreSQL Live Telemetry"
       >
         <Link
           href="/matches"
@@ -86,7 +86,7 @@ export default function DashboardPage() {
         <MetricCard
           title="Total CPSE Materials"
           value={formatNumber(metrics.totalMaterials)}
-          subtext="Cataloged across 8 enterprises"
+          subtext={`Cataloged across ${cpses.length} enterprises`}
           icon={Boxes}
         />
         <MetricCard

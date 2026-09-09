@@ -467,6 +467,18 @@ def seed_database(force: bool = False):
                     action_taken_at=datetime.now(timezone.utc),
                 )
                 sample_approvals.append(approval)
+            else:
+                approval = Approval(
+                    id=str(uuid.uuid4()),
+                    match_id=match_id,
+                    material_id=mat_a_id,
+                    reviewer_name="Pending Officer Review",
+                    reviewer_role="Procurement Officer",
+                    decision="PENDING",
+                    comments="Awaiting parameter verification and sign-off.",
+                    action_taken_at=None,
+                )
+                sample_approvals.append(approval)
 
         db.add_all(sample_matches)
         db.flush()

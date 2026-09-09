@@ -41,7 +41,11 @@ export interface Material {
   legacyCode: string;
   rawDescription: string;
   normalizedDescription: string;
-  category: "Bearing" | "Valve" | "Fastener" | "Electrical" | "Piping" | "Rotating Equipment" | "Sealing";
+  category: string;
+  materialGroup?: string;
+  family?: string;
+  sizeOrRating?: string;
+  recordId?: string;
   uom: string;
   manufacturer?: string;
   standard?: string; // e.g. "IS 1364", "ASTM A105", "DIN 625"
@@ -86,6 +90,10 @@ export interface NationalMaterial {
   nationalCode: string; // e.g. "NMC-BRG-6205-2RS"
   standardDescription: string;
   category: string;
+  materialGroup?: string;
+  family?: string;
+  equivalenceGroup?: string;
+  uom?: string;
   keySpecifications: Record<string, string>;
   participatingCpsesCount: number;
   legacyCodesCount: number;
@@ -94,6 +102,7 @@ export interface NationalMaterial {
   status: "ACTIVE" | "UNDER_REVIEW" | "DEPRECATED";
   createdAt: string;
   updatedAt: string;
+  mappedMaterials?: Material[];
 }
 
 export interface MaterialMapping {
@@ -161,3 +170,25 @@ export interface MetricSummary {
   potentiallyRationalizableCodes: number;
   estimatedConsolidationSavingsInr: number;
 }
+
+export interface PaginatedResult<T> {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface UploadRecord {
+  id: string;
+  filename: string;
+  cpseCode?: string;
+  fileType: string;
+  status: string;
+  rowCount: number;
+  processedCount: number;
+  errorLog?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+

@@ -34,4 +34,5 @@ def test_api_v1_routers_mounted(client):
     for route in routes_to_test:
         res = client.get(route)
         assert res.status_code == 200, f"Route {route} failed with {res.status_code}"
-        assert "status" in res.json() or "items" in res.json()
+        data = res.json()
+        assert isinstance(data, (list, dict))

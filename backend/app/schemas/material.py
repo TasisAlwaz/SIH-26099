@@ -21,8 +21,13 @@ class MaterialBase(BaseSchema):
     manufacturer: Optional[str] = None
     standard: Optional[str] = None
     material_grade: Optional[str] = None
+    size_or_rating: Optional[str] = None
+    material_group: Optional[str] = None
+    family: Optional[str] = None
+    record_id: Optional[str] = None
     specifications: Dict[str, str] = Field(default_factory=dict)
     attributes: List[MaterialAttributeSchema] = Field(default_factory=list)
+
 
 
 class MaterialCreate(MaterialBase):
