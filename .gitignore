@@ -1,0 +1,149 @@
+# ==============================================================================
+# N-MAT (SIH 26099) - Repository .gitignore
+# ==============================================================================
+
+# --- Environment & Secret Files (CRITICAL: NEVER COMMIT) ---
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+*.env
+!.env.example
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*.pub
+secrets/
+credentials.json
+service-account*.json
+token.json
+
+# --- Python & FastAPI ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# --- Virtual Environments ---
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+bin/activate*
+
+# --- Node.js & Next.js ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-debug.log*
+.next/
+out/
+build/
+.npm
+*.tsbuildinfo
+next-env.d.ts
+
+# --- Database & PostgreSQL Local Volumes ---
+postgres-data/
+pgdata/
+*.dump
+*.sql.bak
+*.sqlite
+*.sqlite3
+*.db
+
+# --- Docker ---
+docker-compose.override.yml
+*.docker.log
+
+# --- ML Artifacts, Model Binaries & Checkpoints ---
+# Model weights must not be tracked in git; use model registries / releases
+models/*
+!models/.gitkeep
+*.pt
+*.pth
+*.bin
+*.onnx
+*.safetensors
+*.h5
+*.pkl
+*.joblib
+wandb/
+mlruns/
+lightning_logs/
+
+# --- Large Datasets & Processed Batches ---
+data/raw/*
+data/processed/*
+data/interim/*
+!data/.gitkeep
+*.parquet
+*.feather
+*.arrow
+
+# --- IDE & Developer Tooling ---
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+.fleet/
+
+# --- Operating System & Cache Files ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.directory
+
+# --- Logs & Temp ---
+logs/
+*.log
+tmp/
+temp/
