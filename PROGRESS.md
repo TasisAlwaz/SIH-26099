@@ -2,7 +2,7 @@
 
 **Project:** N-MAT — National Material Intelligence Platform (SIH PS 26099)  
 **Workspace:** `/home/blackhelix/Documents/SIH_26099/N-MAT`  
-**Current Phase:** Phase 3 — COMPLETE (Awaiting Phase 4 Sign-Off)
+**Current Phase:** Phase 4 — COMPLETE (Awaiting Phase 5 Sign-Off)
 
 ---
 
@@ -13,32 +13,35 @@
 | **Phase 0** | Project Constitution & Governance Invariants | **COMPLETE** | Approved by Project Owner |
 | **Phase 1** | Environment & Repository Setup | **COMPLETE** | Approved by Project Owner |
 | **Phase 2** | Frontend Shell & Design System | **COMPLETE** | Approved by Project Owner |
-| **Phase 3** | Backend Foundation & Database Models | **COMPLETE** | Ready for Owner Sign-off |
-| **Phase 4** | Mock AI Engine & Matching Pipeline | PENDING | Awaiting Phase 3 Sign-off |
-| **Phase 5** | Functional Platform & HITL Console | PENDING | - |
-| **Phase 6** | ML Model Development | PENDING | - |
-| **Phase 7** | ML Integration & Hot-Swap | PENDING | - |
-| **Phase 8** | Analytics & Procurement Intelligence | PENDING | - |
-| **Phase 9** | Testing, Security & Hardening | PENDING | - |
-| **Phase 10**| Production Docker & Demo Prep | PENDING | - |
+| **Phase 3** | Backend Foundation & FastAPI REST APIs | **COMPLETE** | Approved by Project Owner |
+| **Phase 4** | Database Architecture & Data Management | **COMPLETE** | Ready for Owner Sign-off |
+| **Phase 5** | Mock AI Engine & Matching Pipeline | PENDING | Awaiting Phase 4 Sign-off |
+| **Phase 6** | Functional Platform & HITL Review Console | PENDING | - |
+| **Phase 7** | ML Model Training (Colab) & Extraction | PENDING | - |
+| **Phase 8** | ML Integration & Hot-Swap | PENDING | - |
+| **Phase 9** | Analytics & Procurement Intelligence | PENDING | - |
+| **Phase 10**| Testing, Hardening, Containerization & Demo | PENDING | - |
 
 ---
 
-## Phase 3 Verification Checklist (Backend Foundation)
+## Phase 4 Verification Checklist (Database & Data Management)
 
-- [x] Created Python virtual environment in `backend/.venv/` (Python 3.12.3)
-- [x] Installed only required backend dependencies (FastAPI, Uvicorn, Pydantic, SQLAlchemy, Alembic, psycopg, python-dotenv)
-- [x] Verified zero ML dependencies (torch, transformers, sentence-transformers, scikit-learn) installed
-- [x] Established environment configuration in `backend/app/core/config.py` with `AI_MODE=mock` default
-- [x] Implemented database connection manager in `backend/app/db/session.py` and declarative base in `backend/app/db/base_class.py`
-- [x] Verified live connection to PostgreSQL database (`nmat_db`) via live queries
-- [x] Initialized and configured Alembic migration environment in `backend/alembic/`
-- [x] Implemented core FastAPI application in `backend/app/main.py` with versioning, CORS, structured logging, and health endpoint
-- [x] Established modular API router structure under `backend/app/api/v1/` for all 10 modules
-- [x] Established Pydantic schemas foundation separated from SQLAlchemy models
-- [x] Established service-layer architecture foundation in `backend/app/services/`
-- [x] Established ML abstraction / interface in `backend/app/services/matching_engine.py` (`BaseMatchingEngine` & `MockMatchingEngine`)
-- [x] Executed backend test suite (5 passed, 100% pass rate)
-- [x] Verified existing frontend builds cleanly with 0 errors (`npm run build` in `frontend/`)
-- [x] Authored `docs/03_BACKEND.md`
-- [x] Zero destructive database operations performed
+- [x] Inspected raw datasets in `data/raw/` strictly in read-only mode without mutations
+- [x] Defined all 8 core SQLAlchemy models in `backend/app/models/` (`CPSE`, `NationalMaterial`, `Material`, `MaterialMapping`, `Match`, `Approval`, `AuditLog`, `Upload`)
+- [x] Configured declarative base metadata discovery in `backend/app/db/base.py`
+- [x] Generated Alembic revision `6ac9cb4dad1b` (`create core nmat tables`)
+- [x] Executed `alembic upgrade head` and confirmed head revision in PostgreSQL
+- [x] Created high-performance, idempotent database ingestion script in `scripts/import_material_master.py`
+- [x] Verified zero ML dependencies (no pandas, numpy, torch, or transformers used in data ingestion)
+- [x] Ingested 4 CPSE master records (`IOCL`, `NTPC`, `SAIL`, `BHEL`)
+- [x] Ingested 1,340 unique National Material records (`NMC-100001` to `NMC-101340`)
+- [x] Ingested 9,600 CPSE legacy material master records
+- [x] Generated 9,600 bidirectional material-to-national mappings
+- [x] Staged 4 CPSE catalog upload audit records
+- [x] Staged 15 multi-CPSE candidate matches with explainability breakdowns and 9 officer approvals
+- [x] Authored comprehensive database test suite in `backend/tests/test_db.py`
+- [x] Executed backend test suite: 13/13 passed (100% pass rate)
+- [x] Verified Next.js frontend builds cleanly with 0 errors (`npm run build`, 14/14 static routes)
+- [x] Authored comprehensive specification document `docs/04_DATABASE.md`
+- [x] Maintained raw data file integrity in `data/raw/` (9,601 and 31,401 lines preserved)
+
