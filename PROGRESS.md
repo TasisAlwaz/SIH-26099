@@ -2,7 +2,7 @@
 
 **Project:** N-MAT — National Material Intelligence Platform (SIH PS 26099)  
 **Workspace:** `/home/blackhelix/Documents/SIH_26099/N-MAT`  
-**Current Phase:** Phase 5 — COMPLETE (Awaiting Phase 6 Sign-Off)
+**Current Phase:** Phase 5.1 — COMPLETE (Hardened & Audited, Awaiting Phase 6 Sign-Off)
 
 ---
 
@@ -15,12 +15,39 @@
 | **Phase 2** | Frontend Shell & Design System | **COMPLETE** | Approved by Project Owner |
 | **Phase 3** | Backend Foundation & FastAPI REST APIs | **COMPLETE** | Approved by Project Owner |
 | **Phase 4** | Database Architecture & Data Management | **COMPLETE** | Approved by Project Owner |
-| **Phase 5** | Functional Material Master Platform | **COMPLETE** | Ready for Owner Sign-off |
-| **Phase 6** | ML Training Preparation & Pipeline | PENDING | Awaiting Phase 5 Sign-off |
+| **Phase 5** | Functional Material Master Platform | **COMPLETE** | Approved by Project Owner |
+| **Phase 5.1**| Backend Hardening & Correctness Audit | **COMPLETE** | Ready for Owner Sign-off |
+| **Phase 6** | ML Training Preparation & Pipeline | PENDING | Awaiting Phase 5.1 Sign-off |
 | **Phase 7** | ML Model Training (Colab) & Extraction | PENDING | - |
 | **Phase 8** | ML Integration & Hot-Swap | PENDING | - |
 | **Phase 9** | Analytics & Procurement Intelligence | PENDING | - |
 | **Phase 10**| Testing, Hardening, Containerization & Demo | PENDING | - |
+
+---
+
+## Phase 5.1 Verification Checklist (Backend Hardening & Correctness Audit)
+
+- [x] Purged fabricated procurement metrics: Removed ₹15,000 per duplicate, ₹225,000 per material, and 12% benefit multipliers
+- [x] Set `estimated_consolidation_savings_inr`, `total_spend_inr`, and `estimated_harmonization_benefit_inr` to `null` where procurement spend data is unavailable
+- [x] Corrected `materials_analyzed` to accurately count distinct materials evaluated in `matches` table rather than total catalog
+- [x] Removed false 100% match confidence: Mapped materials return `match_confidence: null` since mapping imports are not ML predictions
+- [x] Removed artificial `"IS / DIN"` fallback for missing specifications; returns actual `specs.get("STD")` or `None`
+- [x] Set `normalized_description = null` with explicit documentation that raw descriptions are un-normalized
+- [x] Labeled `MockMatchingEngine` explicitly as `DEMO / MOCK HEURISTIC` and updated roadmap references
+- [x] Implemented distinct audit actions: `APPROVE_MAPPING`, `REJECT_MAPPING`, `MODIFY_MAPPING`
+- [x] Allowed dynamic reviewer roles in approval requests without forced role overrides
+- [x] Standardized terminology from "immutable audit trail" to "Audit Trail"
+- [x] Replaced hardcoded 100-row count for Excel uploads with `0` rows and explicit parser note
+- [x] Implemented robust CSV row counting via `csv.reader`
+- [x] Enforced 50 MB upload limit and sanitized filenames with UUID prefixes to prevent path traversal
+- [x] Staged uploaded files safely in isolated `data/staged_uploads/` (added to `.gitignore`)
+- [x] Purged all hardcoded fallback dates (`"2026-09-09 20:30 IST"`, `"2026-09-09 21:03 IST"`)
+- [x] Decoupled data mapping provenance (`source_label`, `source`) from semantic `relationship`
+- [x] Updated frontend UI components and pages to gracefully handle nullable spend, confidence, and description fields
+- [x] Added 4 regression tests to `backend/tests/test_api_v1.py` (27/27 passed in pytest)
+- [x] Verified frontend build (`npm run build` compiled 14/14 static routes cleanly with 0 errors)
+- [x] Updated platform specification `docs/05_FUNCTIONAL_PLATFORM.md`
+- [x] Enforced absolute stop condition: Stopped cleanly before Phase 6
 
 ---
 

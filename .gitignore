@@ -116,6 +116,7 @@ lightning_logs/
 data/raw/*
 data/processed/*
 data/interim/*
+data/staged_uploads/*
 !data/.gitkeep
 *.parquet
 *.feather

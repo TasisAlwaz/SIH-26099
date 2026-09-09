@@ -28,7 +28,7 @@ def process_approval_decision(
 ):
     """
     Record an authorized officer's decision (APPROVED, REJECTED, MODIFIED) on a match recommendation.
-    Updates match status and creates an immutable audit trail entry.
+    Updates match status and records an audit trail entry in PostgreSQL.
     """
     service = ApprovalService(db)
     updated = service.process_decision(id, request)

@@ -92,9 +92,8 @@ export default function DashboardPage() {
         <MetricCard
           title="Materials Analyzed"
           value={formatNumber(metrics.materialsAnalyzed)}
-          subtext="93.6% pipeline throughput"
+          subtext="Candidate pairs compared in DB"
           icon={Layers}
-          trend="+4.2% today"
         />
         <MetricCard
           title="Duplicate Candidates"
@@ -160,7 +159,9 @@ export default function DashboardPage() {
           <span className="text-2xl font-black font-mono text-emerald-300">
             {formatCurrency(metrics.estimatedConsolidationSavingsInr)}
           </span>
-          <span className="text-[10px] text-slate-300">Simulated demand aggregation</span>
+          <span className="text-[10px] text-slate-300">
+            {metrics.estimatedConsolidationSavingsInr ? "Simulated demand aggregation" : "Data pending spend integration"}
+          </span>
         </div>
       </div>
 

@@ -239,7 +239,9 @@ function MatchCenterContent() {
 
           <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
             <span className="text-[10px] uppercase font-bold text-slate-500">Normalized Specification</span>
-            <p className="text-xs text-slate-800 mt-0.5">{matA.normalizedDescription}</p>
+            <p className="text-xs text-slate-800 mt-0.5">
+              {matA.normalizedDescription || "Pending normalization (Raw source preserved)"}
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-2 text-xs pt-1">
@@ -283,7 +285,9 @@ function MatchCenterContent() {
 
           <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
             <span className="text-[10px] uppercase font-bold text-slate-500">Normalized Specification</span>
-            <p className="text-xs text-slate-800 mt-0.5">{matB.normalizedDescription}</p>
+            <p className="text-xs text-slate-800 mt-0.5">
+              {matB.normalizedDescription || "Pending normalization (Raw source preserved)"}
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-2 text-xs pt-1">

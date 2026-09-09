@@ -78,18 +78,22 @@ def format_material(mat: Material) -> MaterialResponse:
     status = MaterialStatus.STANDARDIZED if nmc_code else MaterialStatus.PENDING_REVIEW
     cpse_code = mat.cpse_rel.code if mat.cpse_rel else "CPSE"
 
+    # Derive timestamp from actual database record
     last_updated_str = (
         mat.updated_at.strftime("%Y-%m-%d %H:%M IST")
         if mat.updated_at
-        else "2026-09-09 20:30 IST"
+        else (mat.created_at.strftime("%Y-%m-%d %H:%M IST") if mat.created_at else None)
     )
+
+    # Return actual standard from source specifications if present; do not fabricate "IS / DIN"
+    standard_val = specs.get("STD") or specs.get("STANDARD") or None
 
     return MaterialResponse(
         id=mat.id,
         cpse=cpse_code,
         legacy_code=mat.legacy_code,
         raw_description=mat.description,
-        normalized_description=mat.description,
+        normalized_description=None,  # Not AI/data normalized yet; raw description preserved separately
         category=mat.material_group or mat.family or "General Spares",
         material_group=mat.material_group,
         family=mat.family,
@@ -98,12 +102,12 @@ def format_material(mat: Material) -> MaterialResponse:
         record_id=mat.record_id,
         uom=mat.uom,
         manufacturer=mat.manufacturer,
-        standard=specs.get("CLASS") or specs.get("STD") or "IS / DIN",
+        standard=standard_val,
         specifications=specs,
         attributes=attributes,
         national_material_code=nmc_code,
         status=status,
-        match_confidence=100.0 if nmc_code else None,
+        match_confidence=None,  # Do not fabricate 100% AI confidence for ground truth mappings
         last_updated=last_updated_str,
     )
 

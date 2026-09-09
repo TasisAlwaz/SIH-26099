@@ -44,6 +44,12 @@ class CPSEService:
                 or 0
             )
 
+            last_sync = (
+                cpse.updated_at.strftime("%Y-%m-%d %H:%M IST")
+                if cpse.updated_at
+                else (cpse.created_at.strftime("%Y-%m-%d %H:%M IST") if cpse.created_at else None)
+            )
+
             result.append(
                 CPSEResponse(
                     id=cpse.id,
@@ -56,7 +62,7 @@ class CPSEService:
                     materials_standardized=mapped_count,
                     match_candidates=match_count,
                     approved_mappings=mapped_count,
-                    last_synchronization="2026-09-09 21:03 IST",
+                    last_synchronization=last_sync,
                 )
             )
 
@@ -92,6 +98,12 @@ class CPSEService:
             or 0
         )
 
+        last_sync = (
+            cpse.updated_at.strftime("%Y-%m-%d %H:%M IST")
+            if cpse.updated_at
+            else (cpse.created_at.strftime("%Y-%m-%d %H:%M IST") if cpse.created_at else None)
+        )
+
         return CPSEResponse(
             id=cpse.id,
             code=cpse.code,
@@ -103,7 +115,7 @@ class CPSEService:
             materials_standardized=mapped_count,
             match_candidates=match_count,
             approved_mappings=mapped_count,
-            last_synchronization="2026-09-09 21:03 IST",
+            last_synchronization=last_sync,
         )
 
     def get_cpse_materials(

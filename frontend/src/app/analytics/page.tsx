@@ -167,8 +167,8 @@ export default function AnalyticsPage() {
               <BarChart
                 data={procurement.map((p) => ({
                   ...p,
-                  totalSpendCr: p.totalSpendInr / 10000000,
-                  benefitCr: p.estimatedHarmonizationBenefitInr / 10000000,
+                  totalSpendCr: p.totalSpendInr ? p.totalSpendInr / 10000000 : 0,
+                  benefitCr: p.estimatedHarmonizationBenefitInr ? p.estimatedHarmonizationBenefitInr / 10000000 : 0,
                 }))}
                 margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
               >

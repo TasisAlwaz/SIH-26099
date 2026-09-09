@@ -28,15 +28,13 @@ def format_mapping(m: MaterialMapping) -> MaterialMappingResponse:
     mapped_at_str = (
         m.created_at.strftime("%Y-%m-%d %H:%M IST")
         if m.created_at
-        else "2026-09-09 20:30 IST"
+        else None
     )
 
-    # Determine relationship enum
-    rel = MatchRelationship.DUPLICATE
-    if m.material_rel and m.material_rel.source_match_type:
-        smt = m.material_rel.source_match_type.upper()
-        if smt in MatchRelationship.__members__:
-            rel = MatchRelationship[smt]
+    # Do not conflate dataset generation type with mapping relationship.
+    # Preserve source labels separately.
+    source_lbl = m.material_rel.source_match_type if m.material_rel else None
+    mapping_source = m.source or "SYNTHETIC_GROUND_TRUTH"
 
     return MaterialMappingResponse(
         id=m.id,
@@ -45,8 +43,10 @@ def format_mapping(m: MaterialMapping) -> MaterialMappingResponse:
         cpse=cpse_code,
         legacy_material_code=legacy_code,
         raw_description=raw_desc,
-        confidence=float(m.confidence or 1.0) * 100.0,
-        relationship=rel,
+        confidence=None,  # Not derived from an AI inference pipeline
+        relationship=None,  # Relationship not evaluated via AI; preserved as ground-truth mapping
+        source_label=source_lbl,
+        source=mapping_source,
         mapped_at=mapped_at_str,
         approved_by=m.mapped_by or "SYSTEM_HARMONIZATION",
     )

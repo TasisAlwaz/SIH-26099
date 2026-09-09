@@ -11,5 +11,5 @@ class UploadResponse(BaseSchema):
     row_count: int = 0
     processed_count: int = 0
     error_log: Optional[str] = None
-    created_at: str
-    updated_at: str
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None

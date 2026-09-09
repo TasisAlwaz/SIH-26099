@@ -40,7 +40,7 @@ export interface Material {
   cpse: string;
   legacyCode: string;
   rawDescription: string;
-  normalizedDescription: string;
+  normalizedDescription?: string | null;
   category: string;
   materialGroup?: string;
   family?: string;
@@ -48,14 +48,14 @@ export interface Material {
   recordId?: string;
   uom: string;
   manufacturer?: string;
-  standard?: string; // e.g. "IS 1364", "ASTM A105", "DIN 625"
+  standard?: string | null; // e.g. "IS 1364", "ASTM A105", "DIN 625"
   materialGrade?: string; // e.g. "SS316", "SS304", "WCB", "CS"
   specifications: Record<string, string>;
   attributes: MaterialAttribute[];
   nationalMaterialCode?: string;
   status: MaterialStatus;
-  matchConfidence?: number;
-  lastUpdated: string;
+  matchConfidence?: number | null;
+  lastUpdated?: string | null;
   historicalSpend?: number;
   historicalQty?: number;
 }
@@ -112,9 +112,11 @@ export interface MaterialMapping {
   cpse: string;
   legacyMaterialCode: string;
   rawDescription: string;
-  confidence: number;
-  relationship: MatchRelationship;
-  mappedAt: string;
+  confidence?: number | null;
+  relationship?: MatchRelationship | string | null;
+  sourceLabel?: string | null;
+  source?: string | null;
+  mappedAt?: string | null;
   approvedBy: string;
 }
 
@@ -131,31 +133,31 @@ export interface Approval {
   confidence: number;
   status: ApprovalStatus;
   recommendedNmc: string;
-  createdAt: string;
-  reviewer?: string;
-  actionTakenAt?: string;
-  rejectionReason?: string;
+  createdAt?: string | null;
+  reviewer?: string | null;
+  actionTakenAt?: string | null;
+  rejectionReason?: string | null;
 }
 
 export interface AuditLog {
   id: string;
-  timestamp: string;
+  timestamp?: string | null;
   user: string;
-  role: "CHIEF_PROCUREMENT_OFFICER" | "CATALOG_MASTER_ADMIN" | "DATA_ENGINEER" | "SYSTEM_AUDITOR";
-  action: "APPROVE_MAPPING" | "REJECT_MAPPING" | "MODIFY_MAPPING" | "MANUAL_MERGE" | "CATALOG_INGEST" | "SYSTEM_NORMALIZATION";
+  role: string;
+  action: string;
   entity: string;
   oldValue: string;
   newValue: string;
-  decision: "APPROVED" | "REJECTED" | "MODIFIED" | "TRIGGERED";
-  source: string; // e.g. "AI Match Center", "Manual Review Queue", "Automated Batch Ingestion"
+  decision: string;
+  source: string;
 }
 
 export interface ProcurementRecord {
   category: string;
   legacyCodesCount: number;
   consolidatedNmcCount: number;
-  totalSpendInr: number;
-  estimatedHarmonizationBenefitInr: number;
+  totalSpendInr?: number | null;
+  estimatedHarmonizationBenefitInr?: number | null;
   rationalizationRatio: number; // e.g. 0.42 (42% code reduction)
 }
 
@@ -168,7 +170,7 @@ export interface MetricSummary {
   cpsesConnected: number;
   pendingReviews: number;
   potentiallyRationalizableCodes: number;
-  estimatedConsolidationSavingsInr: number;
+  estimatedConsolidationSavingsInr?: number | null;
 }
 
 export interface PaginatedResult<T> {

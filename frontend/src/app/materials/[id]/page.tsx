@@ -127,10 +127,10 @@ export default function MaterialDetailPage() {
         {/* Normalized Description Block */}
         <div className="p-3.5 rounded bg-blue-50/60 border border-blue-200">
           <span className="text-[10px] uppercase font-bold text-blue-900 tracking-wider">
-            Normalized Technical Description (AI Standardized)
+            Normalized Technical Description (Standardized Master)
           </span>
           <p className="text-xs text-blue-950 font-medium mt-1 leading-relaxed">
-            {material.normalizedDescription}
+            {material.normalizedDescription || "Pending data/AI normalization. Raw catalog description preserved above."}
           </p>
         </div>
 

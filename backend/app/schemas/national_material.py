@@ -19,10 +19,10 @@ class NationalMaterialResponse(NationalMaterialBase):
     id: str
     participating_cpses_count: int = 0
     legacy_codes_count: int = 0
-    total_historical_spend: float = 0.0
-    total_annual_qty: float = 0.0
+    total_historical_spend: Optional[float] = None
+    total_annual_qty: Optional[float] = None
     status: str = "ACTIVE"
-    created_at: str
-    updated_at: str
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
     mapped_materials: Optional[List[MaterialResponse]] = None
 

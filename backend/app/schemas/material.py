@@ -15,7 +15,7 @@ class MaterialBase(BaseSchema):
     cpse: str
     legacy_code: str
     raw_description: str
-    normalized_description: str
+    normalized_description: Optional[str] = None
     category: str
     uom: str
     manufacturer: Optional[str] = None
@@ -41,4 +41,4 @@ class MaterialResponse(MaterialBase):
     match_confidence: Optional[float] = None
     historical_spend: Optional[float] = None
     historical_qty: Optional[float] = None
-    last_updated: str
+    last_updated: Optional[str] = None

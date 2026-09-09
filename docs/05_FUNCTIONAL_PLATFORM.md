@@ -105,15 +105,16 @@ flowchart TD
 
 ### 3.8 Intelligence & Analytics (`/api/v1/analytics`)
 - **`GET /api/v1/analytics/metrics`** (also aliased as `/dashboard` and `/summary`): Dynamic system-wide KPIs:
-  - `total_materials`: 9,600
-  - `national_materials`: 1,340
-  - `cpses_connected`: 4
-  - `duplicate_candidates`: 8,400
-  - `approved_matches`: Dynamic from database
-  - `average_confidence`: Computed dynamically
-  - `estimated_consolidation_savings_inr`: ~₹12.39 Cr
+  - `total_materials`: 9,600 (from PostgreSQL)
+  - `national_materials`: 1,340 (from PostgreSQL)
+  - `cpses_connected`: 4 (dynamic count of active CPSEs)
+  - `duplicate_candidates`: Count of candidate records in `matches` table
+  - `approved_matches`: Count of `APPROVED` records in `approvals` table
+  - `materials_analyzed`: Count of distinct CPSE materials evaluated in `matches` table (not equated to total catalog)
+  - `average_confidence`: Computed dynamically across match records
+  - `estimated_consolidation_savings_inr`: `null` (Procurement spend data unavailable in synthetic catalog; fabricated multipliers removed)
 - **`GET /api/v1/analytics/relationship-distribution`**: Real distribution of material relationships (`IDENTICAL`, `DUPLICATE`, `NEAR_DUPLICATE`, `FUNCTIONALLY_EQUIVALENT`, `NOT_EQUIVALENT`).
-- **`GET /api/v1/analytics/procurement-records`**: Category-level spend, code reduction counts, and rationalization benefit aggregates.
+- **`GET /api/v1/analytics/procurement-records`**: Category-level code reduction counts; spend and rationalization benefit return `null` / Data Unavailable until real financial datasets are ingested.
 
 ### 3.9 Catalog Upload Staging (`/api/v1/uploads`)
 - **`GET /api/v1/uploads`**: Listing of historical catalog batch uploads and ingestion status.
@@ -205,11 +206,51 @@ All 14 routes compiled cleanly.
 
 ---
 
-## 7. Current Status & Phase 6 Readiness
+## 7. Phase 5.1 Backend Hardening & Correctness Audit
 
-Phase 5 is completely finished and fully verified.
+Phase 5.1 executed a comprehensive corrective hardening pass over the backend implementation to ensure technical honesty, remove fabricated metrics, enforce rigorous boundaries, and eliminate subtle data integrity flaws.
+
+### 7.1 Key Corrections Implemented
+1. **Purged Fabricated Procurement Metrics:**
+   - Removed all hardcoded spend/savings assumptions (`₹15,000` per duplicate, `₹225,000` per material, `12%` procurement benefit).
+   - Fields `estimated_consolidation_savings_inr`, `total_spend_inr`, and `estimated_harmonization_benefit_inr` now explicitly return `null` / Data Unavailable because the raw material master dataset contains catalog technical specifications without procurement financial records.
+   - Corrected `materials_analyzed`: Accurately counts distinct materials evaluated in the `matches` table rather than falsely equating to the entire 9,600 catalog.
+2. **Removed False 100% Match Confidence & Synthetic Fallbacks:**
+   - Mapped CPSE materials now return `match_confidence: null` (rather than synthetic 100.0) since mapping imports are ground-truth administrative joins, not AI inference scores.
+   - Removed artificial `"IS / DIN"` fallback for missing standards; returns actual `specs.get("STD")` or `None`.
+   - Set `normalized_description = null` with explicit architectural notes that source descriptions are raw and un-normalized prior to ML integration.
+3. **Mock Matching Engine Boundary & Roadmap Alignment:**
+   - Explicitly labeled `MockMatchingEngine` as `DEMO / MOCK HEURISTIC` in code and logs.
+   - Updated documentation comments to align with project roadmap phases (`Phase 6 -> Mock AI`, `Phase 7 -> ML Development`, `Phase 8 -> Real ML Integration`).
+4. **Approval Workflow & Audit Trail Hardening:**
+   - Enforced distinct audit actions: `APPROVED -> APPROVE_MAPPING`, `REJECTED -> REJECT_MAPPING`, `MODIFIED -> MODIFY_MAPPING`.
+   - Enabled dynamic reviewer roles in `ApprovalActionRequest` without forced fallback to `CHIEF_PROCUREMENT_OFFICER`.
+   - Standardized terminology to "Audit Trail" across all endpoints and schemas.
+5. **Hardened Upload Staging & File Handling:**
+   - Fixed Excel row counting: Eliminated hardcoded 100-row count, now returning 0 rows with explicit logging indicating binary Excel parsing requires pre-conversion or openpyxl extension.
+   - Robust CSV row counting via `csv.reader`.
+   - Enforced 50 MB upload limit (`MAX_UPLOAD_SIZE = 50 * 1024 * 1024`).
+   - Hardened filename sanitization (`re.sub` + `os.path.basename`) and UUID prefixing to prevent path traversal and file collisions.
+   - Uploaded files staged in isolated `data/staged_uploads/` directory (added to `.gitignore`).
+6. **Purged All Hardcoded Fallback Dates:**
+   - Removed static timestamp fallbacks (`"2026-09-09 20:30 IST"` and `"2026-09-09 21:03 IST"`). Timestamps are derived strictly from database records or set to `null`.
+7. **Decoupled Data Mapping Provenance:**
+   - Separated data mapping provenance (`source_label`, `source`) from semantic relationship classifications (`relationship = null` unless explicitly authorized).
+
+### 7.2 Known Platform Limitations
+- **Procurement Financials:** Real spend and savings analysis requires transactional purchase order datasets, which are not present in current catalog specs.
+- **Excel Ingestion:** Direct `.xlsx`/`.xls` binary ingestion requires adding an external parser package or converting catalogs to CSV.
+- **Similarity Scoring:** Current candidate matches are generated by rule-based heuristic string metrics; semantic vector embeddings and neural similarity require Phase 6/7/8 ML models.
+
+---
+
+## 8. Current Status & Phase 6 Readiness
+
+Phase 5 and Phase 5.1 are completely finished, hardened, and verified.
 
 ```text
 PHASE 5 STATUS: COMPLETE
+PHASE 5.1 STATUS: COMPLETE (Hardened & Audited)
 PHASE 6 STATUS: PENDING (Awaiting Project Owner Explicit Approval)
 ```
+

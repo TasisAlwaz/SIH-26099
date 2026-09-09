@@ -13,12 +13,12 @@ def format_upload(u: Upload) -> UploadResponse:
     created_str = (
         u.created_at.strftime("%Y-%m-%d %H:%M IST")
         if u.created_at
-        else "2026-09-09 20:30 IST"
+        else None
     )
     updated_str = (
         u.updated_at.strftime("%Y-%m-%d %H:%M IST")
         if u.updated_at
-        else "2026-09-09 20:30 IST"
+        else None
     )
 
     return UploadResponse(
@@ -54,6 +54,7 @@ class UploadService:
         cpse_code: Optional[str] = None,
         row_count: int = 0,
         source_path: Optional[str] = None,
+        error_log: Optional[str] = None,
     ) -> UploadResponse:
         cpse_id = None
         if cpse_code:
@@ -65,10 +66,11 @@ class UploadService:
             id=str(uuid.uuid4()),
             filename=filename,
             cpse_id=cpse_id,
-            file_type="CSV" if filename.endswith(".csv") else "EXCEL",
+            file_type="CSV" if filename.lower().endswith(".csv") else "EXCEL",
             status="STAGED",
             row_count=row_count,
             processed_count=0,
+            error_log=error_log,
             source_path=source_path,
         )
         self.db.add(new_upload)

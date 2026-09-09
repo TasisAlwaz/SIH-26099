@@ -23,12 +23,12 @@ def format_national_material(
     created_str = (
         nm.created_at.strftime("%Y-%m-%d %H:%M IST")
         if nm.created_at
-        else "2026-09-09 20:30 IST"
+        else None
     )
     updated_str = (
         nm.updated_at.strftime("%Y-%m-%d %H:%M IST")
         if nm.updated_at
-        else "2026-09-09 20:30 IST"
+        else None
     )
 
     formatted_mapped = (
@@ -49,8 +49,8 @@ def format_national_material(
         key_specifications=specs,
         participating_cpses_count=cpse_count,
         legacy_codes_count=legacy_count,
-        total_historical_spend=float(legacy_count * 125000),  # Baseline representative spend aggregation
-        total_annual_qty=float(legacy_count * 45),
+        total_historical_spend=None,  # No spend data in current datasets; do not fabricate
+        total_annual_qty=None,  # No quantity data in current datasets; do not fabricate
         status="ACTIVE" if nm.is_active else "UNDER_REVIEW",
         created_at=created_str,
         updated_at=updated_str,

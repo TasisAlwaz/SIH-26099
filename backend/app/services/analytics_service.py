@@ -43,12 +43,26 @@ class AnalyticsService:
         )
 
         rationalizable = max(0, total_mats - nat_mats)
-        # Estimated realistic savings: rationalizable items * average inventory holding savings (~15,000 INR per duplicated SKU)
-        est_savings = float(rationalizable * 15000)
+
+        # Accurately count distinct materials processed through candidate matches
+        subq = (
+            self.db.query(Match.material_a_id.label("mat_id"))
+            .union(self.db.query(Match.material_b_id.label("mat_id")))
+            .subquery()
+        )
+        analyzed_count = (
+            self.db.query(func.count(distinct(subq.c.mat_id)))
+            .filter(subq.c.mat_id.isnot(None))
+            .scalar()
+            or 0
+        )
+
+        # Procurement spend/savings data is not present in the current dataset; do not fabricate
+        est_savings = None
 
         return MetricSummaryResponse(
             total_materials=total_mats,
-            materials_analyzed=total_mats,
+            materials_analyzed=analyzed_count,
             duplicate_candidates=dup_count,
             approved_matches=approved_count,
             national_materials=nat_mats,
@@ -115,16 +129,15 @@ class AnalyticsService:
             cat_name = group or "Other Spares"
             nmc_cnt = nmc_count or 1
             ratio = round(1.0 - (nmc_cnt / legacy_count), 2) if legacy_count > 0 else 0.0
-            spend = float(legacy_count * 225000)
-            benefit = float(spend * 0.12)  # ~12% bulk procurement dividend
 
+            # Procurement spend and savings data are not present in current datasets
             records.append(
                 ProcurementRecordResponse(
                     category=cat_name,
                     legacy_codes_count=legacy_count,
                     consolidated_nmc_count=nmc_cnt,
-                    total_spend_inr=spend,
-                    estimated_harmonization_benefit_inr=benefit,
+                    total_spend_inr=None,
+                    estimated_harmonization_benefit_inr=None,
                     rationalization_ratio=ratio,
                 )
             )

@@ -1,4 +1,4 @@
-from typing import List
+from typing import Optional, List
 from app.schemas.common import BaseSchema
 
 
@@ -6,8 +6,8 @@ class ProcurementRecordResponse(BaseSchema):
     category: str
     legacy_codes_count: int
     consolidated_nmc_count: int
-    total_spend_inr: float
-    estimated_harmonization_benefit_inr: float
+    total_spend_inr: Optional[float] = None
+    estimated_harmonization_benefit_inr: Optional[float] = None
     rationalization_ratio: float
 
 
@@ -20,7 +20,7 @@ class MetricSummaryResponse(BaseSchema):
     cpses_connected: int
     pending_reviews: int
     potentially_rationalizable_codes: int
-    estimated_consolidation_savings_inr: float
+    estimated_consolidation_savings_inr: Optional[float] = None
 
 
 class RelationshipDistributionItem(BaseSchema):

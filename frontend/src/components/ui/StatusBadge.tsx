@@ -3,7 +3,7 @@ import { MatchRelationship, ApprovalStatus, MaterialStatus } from "@/types";
 import { cn } from "@/lib/utils";
 
 interface StatusBadgeProps {
-  status: MatchRelationship | ApprovalStatus | MaterialStatus | string;
+  status?: MatchRelationship | ApprovalStatus | MaterialStatus | string | null;
   size?: "sm" | "md";
   className?: string;
 }
@@ -46,8 +46,9 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = "sm", c
       break;
   }
 
-  const formatText = (text: string) => {
-    return text.replace(/_/g, " ");
+  const formatText = (text: string | null | undefined) => {
+    if (!text) return "N/A";
+    return String(text).replace(/_/g, " ");
   };
 
   return (

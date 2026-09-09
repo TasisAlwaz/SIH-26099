@@ -2,7 +2,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 interface ConfidenceBadgeProps {
-  score: number; // 0 to 100
+  score?: number | null; // 0 to 100
   showLabel?: boolean;
   size?: "sm" | "md" | "lg";
   className?: string;
@@ -14,6 +14,14 @@ export const ConfidenceBadge: React.FC<ConfidenceBadgeProps> = ({
   size = "md",
   className,
 }) => {
+  if (score == null) {
+    return (
+      <span className={cn("inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs text-slate-500 font-mono", className)}>
+        N/A
+      </span>
+    );
+  }
+
   let color = "bg-rose-50 text-rose-700 border-rose-300";
   let dotColor = "bg-rose-500";
 

@@ -113,8 +113,7 @@ export const materialService = {
         list = list.filter(
           (m) =>
             m.legacyCode.toLowerCase().includes(q) ||
-            m.rawDescription.toLowerCase().includes(q) ||
-            m.normalizedDescription.toLowerCase().includes(q)
+            (m.normalizedDescription ? m.normalizedDescription.toLowerCase().includes(q) : false)
         );
       }
       const page = params?.page || 1;

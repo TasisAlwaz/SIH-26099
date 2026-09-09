@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from abc import ABC, abstractmethod
 from typing import List, Tuple
 from app.core.config import settings
@@ -8,10 +9,10 @@ from app.schemas.common import MatchRelationship, ApprovalStatus
 
 class BaseMatchingEngine(ABC):
     """
-    Abstract contract for N-MAT AI Matching Engines.
-    Guarantees that both the Mock Engine (Phases 0-5) and the trained
-    PyTorch/Sentence-Transformers Model (Phase 6+) expose the identical
-    logical interface to the backend and frontend.
+    Abstract contract for N-MAT Matching Engines.
+    Guarantees that both the Mock Engine (Phases 0-6) and the trained
+    PyTorch/Sentence-Transformers Model (Phase 8 Real ML Integration, trained in Phase 7)
+    expose the identical logical interface to the backend and frontend.
     """
 
     @abstractmethod
@@ -31,9 +32,10 @@ class BaseMatchingEngine(ABC):
 
 class MockMatchingEngine(BaseMatchingEngine):
     """
-    Deterministic Mock AI Engine.
+    DEMO / MOCK HEURISTIC Matching Engine.
     Employs engineering attribute heuristics and rule-based similarity matrices
-    without loading heavy neural network weights during initial phases.
+    for demonstration and functional platform testing without loading neural network weights.
+    Does NOT use trained AI models, vector search, or semantic embeddings.
     """
 
     async def analyze_pair(
@@ -59,7 +61,7 @@ class MockMatchingEngine(BaseMatchingEngine):
             rationale = [
                 f"Identical industrial category: {material_a.category}",
                 f"Compatible engineering Unit of Measurement: {material_a.uom}",
-                "Dimensional parameters align within standardized master tolerance",
+                "Dimensional parameters align within standardized master tolerance (Demo heuristic)",
             ]
             differences = [
                 "Catalog phrasing variance across participating CPSE legacy systems"
@@ -84,6 +86,8 @@ class MockMatchingEngine(BaseMatchingEngine):
             ]
             recommended_nmc = "N/A"
 
+        now_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M IST")
+
         return MaterialMatchResponse(
             id=f"match-sim-{material_a.legacy_code}-{material_b.legacy_code}",
             material_a=material_a,
@@ -95,7 +99,7 @@ class MockMatchingEngine(BaseMatchingEngine):
             rationale=rationale,
             detected_differences=differences,
             recommended_nmc=recommended_nmc,
-            created_at="2026-09-09 20:30 IST",
+            created_at=now_str,
         )
 
     async def batch_match(
@@ -110,14 +114,15 @@ class MockMatchingEngine(BaseMatchingEngine):
 
 def get_matching_engine() -> BaseMatchingEngine:
     """
-    Factory resolving the active AI matching engine based on environment configuration.
+    Factory resolving the active matching engine based on environment configuration.
     """
     if settings.AI_MODE.lower() == "mock":
         return MockMatchingEngine()
     elif settings.AI_MODE.lower() == "real":
         raise NotImplementedError(
-            "Real ML Matching Engine is scheduled for integration in Phase 6-7. "
-            "Currently operating in Phase 3 Foundation mode."
+            "Real ML Matching Engine is scheduled for integration in Phase 8 "
+            "(Model Development in Phase 7). "
+            "Currently operating in Phase 5 DEMO / MOCK HEURISTIC mode."
         )
     else:
         # Fallback safe default

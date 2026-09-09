@@ -1,3 +1,4 @@
+from typing import Optional
 from app.schemas.common import BaseSchema
 
 
@@ -14,4 +15,4 @@ class AuditLogBase(BaseSchema):
 
 class AuditLogResponse(AuditLogBase):
     id: str
-    timestamp: str
+    timestamp: Optional[str] = None

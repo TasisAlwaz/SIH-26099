@@ -12,7 +12,7 @@ def format_audit_log(a: AuditLog) -> AuditLogResponse:
     ts_str = (
         a.timestamp.strftime("%Y-%m-%d %H:%M:%S IST")
         if a.timestamp
-        else "2026-09-09 20:30 IST"
+        else None
     )
 
     old_val = (

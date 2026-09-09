@@ -46,7 +46,7 @@ def format_approval(a: Approval) -> ApprovalResponse:
     created_str = (
         a.created_at.strftime("%Y-%m-%d %H:%M IST")
         if a.created_at
-        else "2026-09-09 20:30 IST"
+        else None
     )
     action_str = (
         a.action_taken_at.strftime("%Y-%m-%d %H:%M IST")
@@ -124,30 +124,44 @@ class ApprovalService:
         new_decision = request.status.value
         now = datetime.now(timezone.utc)
 
+        # Demo/foundation behavior: use requested role if supplied, else retain existing role or default
+        reviewer_role = request.reviewer_role or approval.reviewer_role or "PROCUREMENT_OFFICER"
+
         # Update Approval record
         approval.decision = new_decision
-        approval.reviewer_name = request.reviewer or "Chief Procurement Officer"
-        approval.reviewer_role = "CHIEF_PROCUREMENT_OFFICER"
+        approval.reviewer_name = request.reviewer or "Procurement Officer"
+        approval.reviewer_role = reviewer_role
         approval.comments = request.review_notes or f"Officer decision: {new_decision}"
         approval.action_taken_at = now
 
-        # Update linked Match status if exists
+        # Synchronize linked Match status if exists
         if approval.match_rel:
             approval.match_rel.status = new_decision
 
         new_state = {
             "decision": new_decision,
             "reviewer_name": approval.reviewer_name,
+            "reviewer_role": approval.reviewer_role,
             "comments": approval.comments,
             "action_taken_at": now.isoformat(),
         }
 
-        # Create immutable AuditLog event
+        # Map decision to distinct audit trail action
+        if new_decision == "APPROVED":
+            audit_action = "APPROVE_MAPPING"
+        elif new_decision == "REJECTED":
+            audit_action = "REJECT_MAPPING"
+        elif new_decision == "MODIFIED":
+            audit_action = "MODIFY_MAPPING"
+        else:
+            audit_action = f"{new_decision}_MAPPING"
+
+        # Record standard audit trail entry in audit_logs
         audit_entry = AuditLog(
             id=str(uuid.uuid4()),
             actor_name=approval.reviewer_name,
-            actor_role="CHIEF_PROCUREMENT_OFFICER",
-            action="APPROVE_MAPPING" if new_decision == "APPROVED" else "REJECT_MAPPING",
+            actor_role=approval.reviewer_role,
+            action=audit_action,
             entity_type="APPROVAL",
             entity_id=approval.id,
             previous_state=old_state,

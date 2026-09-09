@@ -30,7 +30,7 @@ def format_match(m: Match) -> MaterialMatchResponse:
     created_str = (
         m.created_at.strftime("%Y-%m-%d %H:%M IST")
         if m.created_at
-        else "2026-09-09 20:30 IST"
+        else None
     )
 
     reviewer = None
