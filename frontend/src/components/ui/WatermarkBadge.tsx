@@ -13,9 +13,9 @@ export const WatermarkBadge: React.FC<WatermarkBadgeProps> = ({ className, varia
       <div className="bg-amber-50 border-b border-amber-200 px-4 py-1.5 text-xs text-amber-900 flex items-center justify-between">
         <div className="flex items-center gap-2 font-medium">
           <ShieldAlert className="w-3.5 h-3.5 text-amber-700" />
-          <span>SYNTHETIC DEMO ENVIRONMENT — SIH PS 26099 PROTOTYPE</span>
+          <span>Demonstration Environment • Simulated Data</span>
         </div>
-        <span className="text-[11px] text-amber-700">All CPSE data and metrics simulated for demonstration</span>
+        <span className="text-[11px] text-amber-700">CPSE data and metrics are illustrative</span>
       </div>
     );
   }

@@ -307,7 +307,7 @@ export default function MaterialDetailPage() {
                   <th className="py-2.5 px-4">Peer CPSE</th>
                   <th className="py-2.5 px-4">Peer Legacy Code</th>
                   <th className="py-2.5 px-4">Relationship</th>
-                  <th className="py-2.5 px-4">Demo Confidence</th>
+                  <th className="py-2.5 px-4">Confidence</th>
                   <th className="py-2.5 px-4">Review Status</th>
                   <th className="py-2.5 px-4 text-right">Action</th>
                 </tr>

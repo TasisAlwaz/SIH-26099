@@ -33,21 +33,20 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenSidebar }) => {
 
       {/* Right Controls: AI status, role info */}
       <div className="flex items-center gap-3">
-        {/* AI Engine Status */}
+        {/* Engine Status */}
         <Link
           href="/settings"
           className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-50 border border-amber-200 text-amber-900 text-xs hover:bg-amber-100 transition-colors"
-          title="Click to view AI engine settings"
+          title="View matching engine configuration"
         >
-          <Cpu className="w-3.5 h-3.5 text-amber-700 animate-pulse" />
-          <span className="font-semibold text-[11px] uppercase tracking-wider">AI Mode: Mock</span>
-          <span className="text-[10px] text-amber-700 hidden lg:inline">(Phase 2)</span>
+          <Cpu className="w-3.5 h-3.5 text-amber-700" />
+          <span className="font-semibold text-[11px] uppercase tracking-wider">Engine: Demo</span>
         </Link>
 
-        {/* SIH Tag */}
+        {/* Platform Tag */}
         <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-100 border border-slate-200 text-slate-700 text-xs font-mono">
           <Terminal className="w-3.5 h-3.5 text-slate-500" />
-          <span>PS 26099</span>
+          <span>BharatMaterials</span>
         </div>
 
         {/* User Identity / Role */}

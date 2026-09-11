@@ -1,5 +1,4 @@
-// ==============================================================================
-// N-MAT Platform - Centralized Frontend API Client
+// BharatMaterials Platform - Centralized Frontend API Client
 // Standardized HTTP wrapper connecting Next.js to the FastAPI backend.
 // ==============================================================================
 
@@ -64,7 +63,7 @@ async function request<T>(
     // Network / connection failure
     throw new ApiException(
       0,
-      `Failed to communicate with N-MAT backend at ${url}: ${(error as Error).message}`
+      `Failed to communicate with BharatMaterials backend at ${url}: ${(error as Error).message}`
     );
   }
 }

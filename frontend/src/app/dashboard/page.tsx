@@ -43,34 +43,63 @@ export default function DashboardPage() {
   const [matches, setMatches] = useState<MaterialMatch[]>([]);
   const [distribution, setDistribution] = useState<{ name: string; value: number; color: string }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
-      const [m, c, mat, dist] = await Promise.all([
-        materialService.getMetrics(),
-        materialService.getCpses(),
-        materialService.getMatches(),
-        materialService.getRelationshipDistribution(),
-      ]);
-      setMetrics(m);
-      setCpses(c);
-      setMatches(mat);
-      setDistribution(dist);
-      setLoading(false);
+      try {
+        const [m, c, mat, dist] = await Promise.all([
+          materialService.getMetrics(),
+          materialService.getCpses(),
+          materialService.getMatches(),
+          materialService.getRelationshipDistribution(),
+        ]);
+        console.log("Loaded dashboard data", m, c, mat, dist);
+        setMetrics(m);
+        setCpses(c);
+        setMatches(mat);
+        setDistribution(dist);
+      } catch (err: any) {
+        console.error("Dashboard failed to load", err);
+        setError(err.message || "Failed to load dashboard data.");
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, []);
 
-  if (loading || !metrics) {
+  if (error) {
+    return (
+      <div className="p-8 border border-red-200 bg-red-50 text-red-800 rounded-md m-6">
+        <div className="flex items-center gap-3 mb-2">
+          <AlertTriangle className="w-6 h-6 text-red-600" />
+          <h2 className="text-lg font-bold">Service Unavailable</h2>
+        </div>
+        <p className="text-sm">{error}</p>
+      </div>
+    );
+  }
+
+  if (loading) {
     return <LoadingState message="Initializing National Master Dashboard..." />;
+  }
+
+  if (!metrics) {
+    return (
+      <div className="p-8 border border-red-200 bg-red-50 text-red-800 rounded-md m-6">
+        <h2 className="text-lg font-bold">Error</h2>
+        <p>Metrics is null after loading.</p>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="National Material Master Dashboard"
-        description="Cross-CPSE material deduplication, sovereign codification, and procurement intelligence overview."
-        badge="PostgreSQL Live Telemetry"
+        description="Cross-CPSE material deduplication, codification, and procurement intelligence overview."
+        badge="Live Telemetry"
       >
         <Link
           href="/matches"
@@ -143,7 +172,7 @@ export default function DashboardPage() {
       <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-md p-5 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4 border border-blue-800">
         <div>
           <span className="text-[11px] uppercase tracking-wider font-semibold text-blue-300">
-            Sovereign Value Dividend (Simulated)
+            Estimated Rationalization Value (Illustrative)
           </span>
           <h2 className="text-xl font-bold mt-0.5">
             Cross-Enterprise Procurement Harmonization
@@ -175,7 +204,7 @@ export default function DashboardPage() {
                 Material Relationship Distribution
               </h3>
               <p className="text-xs text-slate-500">
-                AI classification breakdown across candidate item pairs
+                Classification breakdown across candidate material pairs
               </p>
             </div>
             <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700">
@@ -290,10 +319,10 @@ export default function DashboardPage() {
               <Sparkles className="w-5 h-5" />
             </div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-blue-900">
-              AI Matching & Attribute Resolution
+              Material Matching & Attribute Resolution
             </h4>
             <p className="text-[11px] text-blue-700 mt-1 max-w-xs">
-              Semantic embeddings + ISO/DIN dimensional vector comparison calculate 98.4% DUPLICATE relationship confidence.
+              Multi-signal heuristic comparison across descriptions, specifications, grades, and dimensional attributes determines relationship and confidence.
             </p>
             <div className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-blue-800 bg-white px-2.5 py-1 rounded border border-blue-200">
               Human Reviewer: APPROVED
@@ -326,10 +355,10 @@ export default function DashboardPage() {
         <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between">
           <div>
             <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide">
-              Recent AI Match Recommendations
+              Recent Match Recommendations
             </h3>
             <p className="text-xs text-slate-500">
-              Candidate material clusters awaiting or finalized in human review queue
+              Candidate material pairs awaiting or finalized in human review queue
             </p>
           </div>
           <Link
@@ -347,7 +376,7 @@ export default function DashboardPage() {
                 <th className="py-3 px-4">Match ID</th>
                 <th className="py-3 px-4">Material Pair (CPSE & Legacy Code)</th>
                 <th className="py-3 px-4">Relationship</th>
-                <th className="py-3 px-4">AI Confidence</th>
+                <th className="py-3 px-4">Confidence</th>
                 <th className="py-3 px-4">Recommended NMC</th>
                 <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4 text-right">Actions</th>

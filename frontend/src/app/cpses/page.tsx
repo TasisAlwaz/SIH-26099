@@ -36,7 +36,7 @@ export default function CpsesPage() {
       <div className="p-3.5 bg-amber-50 rounded-md border border-amber-200 text-xs text-amber-900 flex items-start gap-2.5">
         <ShieldAlert className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
         <div>
-          <span className="font-bold">Synthetic Demonstrator Notice:</span> Data shown below simulates master catalog metrics from key Indian Maharatna and Navratna enterprises for SIH evaluation. No live connection to sovereign ERP / SAP instances is claimed or required in Phase 2.
+          <span className="font-bold">Demonstration Environment:</span> Data shown below simulates master catalog metrics from key Indian Maharatna and Navratna enterprises. No live connection to enterprise ERP systems is claimed.
         </div>
       </div>
 

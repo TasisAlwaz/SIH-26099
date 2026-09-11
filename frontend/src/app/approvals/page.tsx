@@ -46,10 +46,10 @@ export default function ApprovalQueuePage() {
 
     setActionAlert(
       status === "APPROVED"
-        ? `Recommendation ${id} approved successfully! Traceable mapping recorded in National Master.`
+        ? `Recommendation ${id} approved. Decision and audit log entry recorded.`
         : status === "REJECTED"
-        ? `Recommendation ${id} rejected.`
-        : `Recommendation ${id} modified / reclassified.`
+        ? `Recommendation ${id} rejected. Segregation maintained in audit log.`
+        : `Recommendation ${id} modified / reclassified with officer notes.`
     );
     setTimeout(() => setActionAlert(null), 3500);
   };
@@ -65,7 +65,7 @@ export default function ApprovalQueuePage() {
     <div className="space-y-6">
       <PageHeader
         title="Human-in-the-Loop Approval Queue"
-        description="Mandatory governance gate: Authorized procurement officers verify, modify, or reject AI-recommended material consolidations."
+        description="Mandatory governance gate: Authorized procurement officers verify, modify, or reject candidate material master relationships."
       />
 
       {actionAlert && (
@@ -113,7 +113,7 @@ export default function ApprovalQueuePage() {
       ) : filteredApprovals.length === 0 ? (
         <EmptyState
           title="No recommendations in this queue category"
-          description="All AI recommendations for this filter category have been processed or none match."
+          description="All recommendations for this filter category have been processed or none match."
           action={{ label: "View All Records", onClick: () => setFilterStatus("ALL") }}
         />
       ) : (
@@ -126,7 +126,7 @@ export default function ApprovalQueuePage() {
                   <th className="py-3 px-4">Enterprise Source (A)</th>
                   <th className="py-3 px-4">Comparison Target (B)</th>
                   <th className="py-3 px-4">Relationship</th>
-                  <th className="py-3 px-4">AI Score</th>
+                  <th className="py-3 px-4">Confidence</th>
                   <th className="py-3 px-4">Proposed National Code</th>
                   <th className="py-3 px-4">Queue Status</th>
                   <th className="py-3 px-4">Auditor / Date</th>

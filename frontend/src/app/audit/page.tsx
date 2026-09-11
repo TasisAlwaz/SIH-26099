@@ -78,7 +78,7 @@ export default function AuditTrailPage() {
 
       <div className="bg-white rounded-md border border-slate-200 shadow-sm overflow-hidden">
         {loading ? (
-          <LoadingState message="Loading sovereign audit events from database..." />
+          <LoadingState message="Loading governance audit events from database..." />
         ) : logs.length === 0 ? (
           <EmptyState
             title="No Audit Records Found"

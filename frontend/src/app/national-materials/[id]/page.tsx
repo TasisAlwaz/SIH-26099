@@ -77,7 +77,7 @@ export default function NationalMaterialDetailPage() {
 
       <PageHeader
         title={`National Material Code: ${nmc.nationalCode}`}
-        description="Unified sovereign master record with unbroken, bidirectional mapping to participating CPSE legacy material systems."
+        description="Unified national master record with unbroken, bidirectional mapping to participating CPSE legacy material systems."
         badge="Standardized Master"
       />
 

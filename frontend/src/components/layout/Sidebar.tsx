@@ -19,10 +19,18 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const NAV_ITEMS = [
+interface NavItem {
+  name: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: string;
+  badgeCount?: number;
+}
+
+const NAV_ITEMS: NavItem[] = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Material Explorer", href: "/materials", icon: Boxes },
-  { name: "AI Match Center", href: "/matches", icon: Sparkles, badge: "AI Core" },
+  { name: "Material Matching", href: "/matches", icon: Sparkles },
   { name: "Approval Queue", href: "/approvals", icon: CheckSquare, badgeCount: 3 },
   { name: "National Master", href: "/national-materials", icon: Globe2 },
   { name: "CPSE Management", href: "/cpses", icon: Building2 },
@@ -59,24 +67,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {/* Brand Header */}
         <div className="h-16 flex items-center px-5 border-b border-slate-800 bg-slate-950/60 gap-3">
           <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white font-black text-sm tracking-wider shadow-inner">
-            NM
+            BM
           </div>
           <div className="flex flex-col">
             <span className="font-bold text-white text-sm tracking-wide leading-none">
-              N-MAT
+              BharatMaterials
             </span>
             <span className="text-[10px] text-blue-400 font-medium tracking-tight mt-1 uppercase">
-              SIH 26099 • Enterprise
+              National Material Intelligence
             </span>
           </div>
         </div>
 
-        {/* Sovereign Mandate Banner */}
+        {/* Platform Banner */}
         <div className="px-4 py-2.5 bg-slate-950/40 border-b border-slate-800/80">
           <div className="flex items-center gap-2 text-xs text-slate-400">
             <ShieldCheck className="w-3.5 h-3.5 text-blue-400 shrink-0" />
             <span className="text-[11px] font-medium leading-tight text-slate-300">
-              National Material Intelligence
+              CPSE Material Harmonization
             </span>
           </div>
         </div>
@@ -135,13 +143,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {/* Footer info */}
         <div className="p-3 border-t border-slate-800 bg-slate-950/60 text-[11px] text-slate-400">
           <div className="flex items-center justify-between">
-            <span className="font-semibold text-slate-300">Phase 2 Prototype</span>
+            <span className="font-semibold text-slate-300">Demonstration Environment</span>
             <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 border border-slate-700">
-              AI: MOCK
+              Engine: Demo
             </span>
           </div>
           <p className="text-[10px] text-slate-500 mt-1">
-            Government CPSE Material Harmonization
+            Simulated CPSE Data
           </p>
         </div>
       </aside>

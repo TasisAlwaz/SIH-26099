@@ -80,27 +80,27 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Procurement & Rationalization Analytics"
-        description="Cross-enterprise spend harmonization, material redundancy reduction curves, and AI confidence spectrum."
+        description="Cross-enterprise spend harmonization, material redundancy reduction curves, and match confidence spectrum."
         badge="Enterprise Intelligence"
       />
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <MetricCard
-          title="Consolidated Spend Evaluated"
+          title="Consolidated Spend Evaluated (Illustrative)"
           value={formatCurrency(2150000000)} // 215 Crore
           subtext={`Across ${cpses.length || 4} CPSE item masters`}
           icon={BarChart3}
         />
         <MetricCard
-          title="Harmonization Dividend (Simulated)"
+          title="Harmonization Savings (Illustrative)"
           value={formatCurrency(230700000)} // ~23.07 Crore
           subtext="Volume aggregation + price parity"
           icon={TrendingDown}
           trend="+10.7% efficiency"
         />
         <MetricCard
-          title="Overall Code Reduction Ratio"
+          title="Code Reduction Ratio (Illustrative)"
           value="72.4%"
           subtext="From 84k legacy codes to 23k NMC"
           icon={Layers}
@@ -181,7 +181,7 @@ export default function AnalyticsPage() {
                 />
                 <Legend wrapperStyle={{ fontSize: "11px" }} />
                 <Bar dataKey="totalSpendCr" name="Annual Spend (₹ Cr)" fill="#334e68" radius={[2, 2, 0, 0]} />
-                <Bar dataKey="benefitCr" name="Projected Dividend (₹ Cr)" fill="#10b981" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="benefitCr" name="Projected Savings (₹ Cr)" fill="#10b981" radius={[2, 2, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -195,10 +195,10 @@ export default function AnalyticsPage() {
           <div className="flex items-center justify-between pb-2 border-b border-slate-100">
             <div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
-                AI Confidence Spectrum Distribution
+                Match Confidence Spectrum Distribution
               </h3>
               <p className="text-[11px] text-slate-500">
-                Candidate pairs grouped by model confidence thresholds
+                Candidate pairs grouped by heuristic confidence thresholds
               </p>
             </div>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700">

@@ -19,7 +19,7 @@ from app.services.material_service import format_material
 from app.services.matching_engine import get_matching_engine, BaseMatchingEngine
 
 
-def format_match(m: Match) -> MaterialMatchResponse:
+def format_match(m: Match, invert: bool = False) -> MaterialMatchResponse:
     bd = m.breakdown or {}
     breakdown_obj = MatchSignalBreakdown(
         description_similarity=float(bd.get("description_similarity", 85.0)),
@@ -56,17 +56,22 @@ def format_match(m: Match) -> MaterialMatchResponse:
 
     status = ApprovalStatus.PENDING
     if m.status in ApprovalStatus.__members__:
-        status = ApprovalStatus[m.status]
+        status = ApprovalStatus[status] if isinstance(status, str) and status in ApprovalStatus.__members__ else ApprovalStatus.PENDING
+        if m.status in ApprovalStatus.__members__:
+            status = ApprovalStatus[m.status]
+
+    mat_a_formatted = format_material(m.material_b_rel) if invert else format_material(m.material_a_rel)
+    mat_b_formatted = format_material(m.material_a_rel) if invert else format_material(m.material_b_rel)
 
     return MaterialMatchResponse(
         id=m.id,
-        material_a=format_material(m.material_a_rel),
-        material_b=format_material(m.material_b_rel),
+        material_a=mat_a_formatted,
+        material_b=mat_b_formatted,
         confidence=float(m.confidence),
         relationship=rel,
         status=status,
         breakdown=breakdown_obj,
-        rationale=m.rationale or ["Verified by N-MAT rule heuristic matching pipeline"],
+        rationale=m.rationale or ["Verified by BharatMaterials heuristic matching pipeline"],
         detected_differences=m.differences or [],
         recommended_nmc=m.recommended_nmc or "N/A",
         created_at=created_str,
@@ -160,7 +165,8 @@ class MatchingService:
             .first()
         )
         if existing:
-            return format_match(existing)
+            invert = (existing.material_a_id == request.material_b_id)
+            return format_match(existing, invert=invert)
 
         # Retrieve materials from db
         mat_a = (

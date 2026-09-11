@@ -3,9 +3,9 @@ import "./globals.css";
 import { AppLayout } from "@/components/layout/AppLayout";
 
 export const metadata: Metadata = {
-  title: "N-MAT | National Material Intelligence Platform (SIH 26099)",
+  title: "BharatMaterials — National Material Intelligence Platform",
   description:
-    "AI-Powered National Unified Material Master Platform for Central Public Sector Enterprises (CPSEs)",
+    "National Unified Material Master Platform for Central Public Sector Enterprises (CPSEs)",
 };
 
 export default function RootLayout({

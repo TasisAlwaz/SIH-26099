@@ -72,6 +72,12 @@ function MatchCenterContent() {
         if (queryMatA && queryMatB) {
           setCustomMatAId(queryMatA);
           setCustomMatBId(queryMatB);
+          try {
+            const pairResult = await materialService.analyzePair(queryMatA, queryMatB);
+            setSelectedMatch(pairResult);
+          } catch (err) {
+            console.error("Auto-analysis failed for URL query params:", err);
+          }
         } else if (queryMatA) {
           setCustomMatAId(queryMatA);
           const other = mats.find((m) => m.id !== queryMatA);
@@ -139,7 +145,8 @@ function MatchCenterContent() {
         const updatedList = await materialService.getMatches();
         setMatches(updatedList);
       } catch (err: any) {
-        setErrorMessage(err.message || "Failed to analyze pair. Please verify material IDs.");
+        setSelectedMatch(null);
+        setErrorMessage(err.message || "Unable to analyze this material pair. Please try again.");
       } finally {
         setAnalyzing(false);
         setAnalysisStep("");
@@ -209,13 +216,13 @@ function MatchCenterContent() {
     }
   };
 
-  if (loading || !selectedMatch) {
-    return <LoadingState message="Initializing Mock Material Matching Engine..." />;
+  if (loading) {
+    return <LoadingState message="Loading Material Master Catalog & Match Center..." />;
   }
 
-  const matA = selectedMatch.materialA;
-  const matB = selectedMatch.materialB;
-  const bd = selectedMatch.breakdown;
+  const matA = selectedMatch?.materialA;
+  const matB = selectedMatch?.materialB;
+  const bd = selectedMatch?.breakdown;
 
   const filteredMaterialsA = allMaterials.filter(
     (m) =>
@@ -237,16 +244,16 @@ function MatchCenterContent() {
     <div className="space-y-6">
       <PageHeader
         title="Material Match & Deduplication Center"
-        description="Multi-attribute engineering comparison, deterministic relationship classification, and explainable AI recommendations."
-        badge="Phase 6: Mock AI Engine"
+        description="Multi-attribute engineering comparison, deterministic relationship classification, and explainable recommendations."
+        badge="Demo Heuristic Engine"
       >
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono px-2.5 py-1 rounded bg-amber-50 text-amber-900 border border-amber-300 font-semibold flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-            Engine: MOCK HEURISTIC
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
+            Engine: Demo Heuristic
           </span>
           <span className="text-xs px-2.5 py-1 rounded bg-slate-100 text-slate-700 border border-slate-200 font-medium">
-            Synthetic Demo Dataset
+            Demonstration Environment
           </span>
         </div>
       </PageHeader>
@@ -268,7 +275,7 @@ function MatchCenterContent() {
                 key={m.id}
                 onClick={() => handleSelectPreset(m)}
                 className={`px-2.5 py-1 rounded font-mono text-[11px] border transition-colors whitespace-nowrap ${
-                  selectedMatch.id === m.id
+                  selectedMatch?.id === m.id
                     ? "bg-blue-700 text-white border-blue-700 font-bold"
                     : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
                 }`}
@@ -303,7 +310,15 @@ function MatchCenterContent() {
             </div>
             <select
               value={customMatAId}
-              onChange={(e) => setCustomMatAId(e.target.value)}
+              onChange={(e) => {
+                const newId = e.target.value;
+                setCustomMatAId(newId);
+                if (selectedMatch && (selectedMatch.materialA.id !== newId || selectedMatch.materialB.id !== customMatBId)) {
+                  setSelectedMatch(null);
+                }
+                setErrorMessage(null);
+                setActionSuccessMessage(null);
+              }}
               className="w-full text-xs bg-slate-50 border border-slate-200 rounded p-2 text-slate-800 font-medium focus:ring-1 focus:ring-blue-600 focus:outline-none"
             >
               {filteredMaterialsA.map((m) => (
@@ -352,7 +367,15 @@ function MatchCenterContent() {
             </div>
             <select
               value={customMatBId}
-              onChange={(e) => setCustomMatBId(e.target.value)}
+              onChange={(e) => {
+                const newId = e.target.value;
+                setCustomMatBId(newId);
+                if (selectedMatch && (selectedMatch.materialB.id !== newId || selectedMatch.materialA.id !== customMatAId)) {
+                  setSelectedMatch(null);
+                }
+                setErrorMessage(null);
+                setActionSuccessMessage(null);
+              }}
               className="w-full text-xs bg-slate-50 border border-slate-200 rounded p-2 text-slate-800 font-medium focus:ring-1 focus:ring-blue-600 focus:outline-none"
             >
               {filteredMaterialsB.map((m) => (
@@ -380,8 +403,10 @@ function MatchCenterContent() {
         </div>
       )}
 
-      {/* Side-by-Side Material Card Comparison */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {selectedMatch && matA && matB && bd ? (
+        <>
+          {/* Side-by-Side Material Card Comparison */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Material A Card */}
         <div className="bg-white rounded-md border border-slate-200 p-5 shadow-sm space-y-3">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -508,7 +533,7 @@ function MatchCenterContent() {
                 STEP 5: Deterministic Relationship Verdict
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
-                {selectedMatch.engine || "MOCK_HEURISTIC"}
+                {selectedMatch.engine === "MOCK_HEURISTIC" ? "Demo Heuristic Engine" : (selectedMatch.engine || "Demo Heuristic Engine")}
               </span>
             </div>
             <div className="flex items-center gap-3 mt-1.5">
@@ -516,7 +541,7 @@ function MatchCenterContent() {
               <div className="flex items-center gap-1.5">
                 <ConfidenceBadge score={selectedMatch.confidence} size="lg" />
                 <span className="text-[11px] font-medium text-slate-500">
-                  (Demo heuristic confidence)
+                  (Heuristic confidence score)
                 </span>
               </div>
             </div>
@@ -601,12 +626,12 @@ function MatchCenterContent() {
             <div className="p-3 bg-slate-50 rounded border border-slate-200">
               <span className="text-[10px] text-slate-500 block uppercase font-semibold">Family / Category</span>
               <span className="font-mono text-base font-bold text-slate-800">
-                {bd.familyCompatibility ?? 85.0}%
+                {bd.familyCompatibility != null ? `${bd.familyCompatibility}%` : "N/A"}
               </span>
               <div className="w-full bg-slate-200 h-1.5 rounded-full mt-1.5 overflow-hidden">
                 <div
                   className="bg-indigo-600 h-full rounded-full"
-                  style={{ width: `${bd.familyCompatibility ?? 85.0}%` }}
+                  style={{ width: `${bd.familyCompatibility ?? 0}%` }}
                 />
               </div>
             </div>
@@ -614,12 +639,12 @@ function MatchCenterContent() {
             <div className="p-3 bg-slate-50 rounded border border-slate-200">
               <span className="text-[10px] text-slate-500 block uppercase font-semibold">Size / Rating</span>
               <span className="font-mono text-base font-bold text-slate-800">
-                {bd.sizeRatingCompatibility ?? 80.0}%
+                {bd.sizeRatingCompatibility != null ? `${bd.sizeRatingCompatibility}%` : "N/A"}
               </span>
               <div className="w-full bg-slate-200 h-1.5 rounded-full mt-1.5 overflow-hidden">
                 <div
                   className="bg-indigo-600 h-full rounded-full"
-                  style={{ width: `${bd.sizeRatingCompatibility ?? 80.0}%` }}
+                  style={{ width: `${bd.sizeRatingCompatibility ?? 0}%` }}
                 />
               </div>
             </div>
@@ -627,12 +652,12 @@ function MatchCenterContent() {
             <div className="p-3 bg-slate-50 rounded border border-slate-200">
               <span className="text-[10px] text-slate-500 block uppercase font-semibold">Material Grade</span>
               <span className="font-mono text-base font-bold text-slate-800">
-                {bd.materialGradeCompatibility ?? 75.0}%
+                {bd.materialGradeCompatibility != null ? `${bd.materialGradeCompatibility}%` : "N/A"}
               </span>
               <div className="w-full bg-slate-200 h-1.5 rounded-full mt-1.5 overflow-hidden">
                 <div
                   className="bg-purple-600 h-full rounded-full"
-                  style={{ width: `${bd.materialGradeCompatibility ?? 75.0}%` }}
+                  style={{ width: `${bd.materialGradeCompatibility ?? 0}%` }}
                 />
               </div>
             </div>
@@ -731,6 +756,20 @@ function MatchCenterContent() {
           </div>
         </div>
       </div>
+        </>
+      ) : (
+        <div className="bg-white rounded-md border border-slate-200 p-10 text-center shadow-sm space-y-3">
+          <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
+            <Sparkles className="w-6 h-6" />
+          </div>
+          <h4 className="text-sm font-bold text-slate-800">
+            Ready for Material Pair Comparison
+          </h4>
+          <p className="text-xs text-slate-500 max-w-md mx-auto">
+            Select Material A and Material B using the selectors above, then click <strong className="text-slate-700">Analyze Match</strong> to evaluate multi-attribute engineering alignment and generate codification recommendations.
+          </p>
+        </div>
+      )}
 
       {/* Review Decision Modal */}
       {showReviewModal && (

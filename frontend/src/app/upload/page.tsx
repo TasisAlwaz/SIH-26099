@@ -247,7 +247,7 @@ export default function DataUploadPage() {
                 Column Header Detection & Semantic Mapping
               </h3>
               <p className="text-xs text-slate-500">
-                Automated mapping of source headers to N-MAT Canonical Master Schema.
+                Automated mapping of source headers to BharatMaterials Unified Master Schema.
               </p>
             </div>
             <button

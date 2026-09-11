@@ -1,7 +1,5 @@
 // ==============================================================================
-// N-MAT Platform - Data Access & Service Boundary (Phase 5 Live Backend)
-// Connects UI components directly to the FastAPI/PostgreSQL backend services.
-// Implements seamless fallbacks for offline development/build verification.
+// BharatMaterials Platform - Data Access & Service Boundary
 // ==============================================================================
 
 import {
@@ -192,32 +190,7 @@ export const materialService = {
   },
 
   async analyzePair(matAId: string, matBId: string): Promise<MaterialMatch> {
-    try {
-      return await matchesApi.analyzePair(matAId, matBId);
-    } catch (e) {
-      console.warn("Backend unavailable, generating client simulated match:", e);
-      const matA = MOCK_MATERIALS.find((m) => m.id === matAId) || MOCK_MATERIALS[0];
-      const matB = MOCK_MATERIALS.find((m) => m.id === matBId) || MOCK_MATERIALS[1];
-      return {
-        id: `match-dyn-${Date.now()}`,
-        materialA: matA,
-        materialB: matB,
-        confidence: 92.5,
-        relationship: "NEAR_DUPLICATE",
-        status: "PENDING",
-        breakdown: {
-          descriptionSimilarity: 89.0,
-          specificationSimilarity: 94.0,
-          attributeSimilarity: 95.0,
-          uomCompatibility: 100.0,
-          manufacturerMatch: 100.0,
-        },
-        rationale: ["Attributes match operational interchangeability tolerance"],
-        detectedDifferences: ["Minor catalog terminology difference"],
-        recommendedNmc: matA.nationalMaterialCode || "NMC-100139",
-        createdAt: "Just now",
-      };
-    }
+    return await matchesApi.analyzePair(matAId, matBId);
   },
 
   // --- Approvals (HITL Actions) ---

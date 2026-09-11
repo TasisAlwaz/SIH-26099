@@ -22,44 +22,44 @@ export default function SettingsPage() {
     <div className="space-y-6 max-w-4xl">
       <PageHeader
         title="Platform Settings & System Configuration"
-        description="User credentials, cognitive engine parameters, and demo runtime operational flags."
+        description="User credentials, matching engine configuration, and display preferences."
       />
 
-      {/* 1. AI Engine Mode Specification (MANDATORY INVARIANT) */}
+      {/* 1. Engine Mode Specification */}
       <div className="bg-white rounded-md border border-amber-300 p-5 shadow-sm space-y-4 bg-amber-50/20">
         <div className="flex items-center justify-between pb-3 border-b border-amber-200">
           <div className="flex items-center gap-2">
             <Cpu className="w-5 h-5 text-amber-700" />
             <h3 className="text-sm font-bold uppercase tracking-wider text-amber-950">
-              AI / ML Inference Engine Configuration
+              Matching Engine Configuration
             </h3>
           </div>
           <span className="font-mono text-xs font-bold px-2.5 py-1 rounded bg-amber-100 text-amber-900 border border-amber-300">
-            ACTIVE MODE: MOCK
+            ENGINE: DEMO HEURISTIC
           </span>
         </div>
 
         <div className="p-4 rounded bg-white border border-amber-200 space-y-2">
           <div className="flex items-center gap-2 text-xs font-bold text-amber-900">
             <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
-            <span>Phase 2 Mock Engine Operational Mandate</span>
+            <span>Matching Engine Architecture</span>
           </div>
           <p className="text-xs text-slate-600 leading-relaxed">
-            N-MAT is currently utilizing a deterministic Mock AI Engine to validate end-to-end user experience, multi-vector similarity visualization, and Human-in-the-Loop review workflows.
+            BharatMaterials utilizes a deterministic heuristic matching engine to evaluate multi-attribute similarities, classify item relationships, and support human-in-the-loop review workflows.
           </p>
           <p className="text-xs font-semibold text-slate-800">
-            &quot;The real ML inference engine will be integrated in a later phase.&quot;
+            Machine learning inference is planned for future integration following dataset evaluation.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
           <div className="p-3 bg-white rounded border border-slate-200">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Current Model Provider</span>
-            <span className="font-mono font-bold text-slate-800 mt-0.5 block">In-Memory Mock Heuristics</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400 block">Current Engine</span>
+            <span className="font-mono font-bold text-slate-800 mt-0.5 block">Demo Heuristic Engine</span>
           </div>
           <div className="p-3 bg-white rounded border border-slate-200">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Target Architecture (Phase 6-8)</span>
-            <span className="font-mono font-bold text-blue-700 mt-0.5 block">PyTorch + Sentence Transformers</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400 block">Future ML Engine</span>
+            <span className="font-mono font-bold text-blue-700 mt-0.5 block">Planned — to be selected after dataset evaluation</span>
           </div>
         </div>
       </div>
@@ -152,7 +152,7 @@ export default function SettingsPage() {
             <div>
               <span className="font-bold text-slate-800 block">Demonstration Watermark Badges</span>
               <span className="text-slate-500">
-                Display sovereign synthetic data tags per Constitution rule
+                Display demonstration watermark tags across interface
               </span>
             </div>
             <span className="font-mono font-bold text-emerald-700 text-xs px-2.5 py-1 bg-emerald-50 rounded border border-emerald-200">

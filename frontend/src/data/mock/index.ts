@@ -1,5 +1,4 @@
-// ==============================================================================
-// N-MAT Platform - Centralized Mock / Synthetic Data Layer
+// BharatMaterials Platform - Centralized Mock / Synthetic Data Layer
 // NOTE: All data herein is synthetic/simulated for SIH PS 26099 demonstration.
 // ==============================================================================
 
@@ -803,7 +802,7 @@ export const MOCK_AUDIT_LOGS: AuditLog[] = [
   {
     id: "aud-001",
     timestamp: "2026-09-09 12:45:10 IST",
-    user: "System AI Engine (Mock)",
+    user: "System Heuristic Engine",
     role: "DATA_ENGINEER",
     action: "SYSTEM_NORMALIZATION",
     entity: "Material Catalog (BPCL / IOCL)",

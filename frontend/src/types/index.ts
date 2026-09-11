@@ -1,6 +1,4 @@
-// ==============================================================================
-// N-MAT Platform - Centralized TypeScript Domain Interfaces
-// ==============================================================================
+// BharatMaterials Platform - Centralized TypeScript Domain Interfaces
 
 export type MatchRelationship =
   | "IDENTICAL"
